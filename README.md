@@ -1,12 +1,13 @@
 # undertheory
 
+*Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc.*
+
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
 [![Erlang Versions][erlang badge]][versions]
 
 [![][logo]][logo-large]
 
-*Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc.*
 
 ## Dependencies & Setup
 
@@ -42,5 +43,5 @@ TBD
 [gh-actions]: https://github.com/ut-proj/undertheory/actions
 [lfe]: https://github.com/rvirding/lfe
 [lfe badge]: https://img.shields.io/badge/lfe-2.0-blue.svg
-[erlang badge]: https://img.shields.io/badge/erlang-21%20to%2024-blue.svg
+[erlang badge]: https://img.shields.io/badge/erlang-19%20to%2024-blue.svg
 [versions]: https://github.com/ut-proj/undertheory/blob/master/.github/workflows/cicd.yml
