@@ -14,7 +14,7 @@
 This application assumes that the following are on your system:
 
 * `git`
-* A modern install of Erlang (v20+)
+* A modern install of Erlang (v19+)
 * [rebar3](https://www.rebar3.org/) (Erlang build tool)
 
 
