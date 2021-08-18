@@ -1,0 +1,15 @@
+{application, undertheory,
+ [{description, "Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc."},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["BSD 2-clause"]},
+  {links, []},
+  {exclude_files, ["priv/*"]}
+ ]}.

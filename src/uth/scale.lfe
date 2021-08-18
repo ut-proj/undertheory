@@ -1,4 +1,4 @@
-(defmodule um.scale
+(defmodule uth.scale
   (export all))
 
 (defun chromatic ()
@@ -93,59 +93,3 @@
 
 (defun tritone ()
   '(1 b2 3 b5 5 b7))
-
-;;; Utilty Functions
-
-(defun ->pitch
-    ((1) 0)
-    (('b2) 1)
-    ((2) 2)
-    (('|#2|) 3)
-    (('b3) 3)
-    ((3) 4)
-    (('|#3|) 5)
-    ((''b4) 4)
-    ((4) 5)
-    (('|#4|) 6)
-    (('b5) 6)
-    ((5) 7)
-    (('|#5|) 8)
-    (('b6) 8)
-    ((6) 9)
-    (('|#6|) 10)
-    (('b7) 10)
-    ((7) 11)
-    (('|#7|) 12)
-    (('b8) 11)
-    ((8) 12)
-    (('|#8|) 13)
-    (('b9) 13)
-    ((9) 14)
-    (('|#9|) 15)
-    (('b10) 15)
-    ((10) 16)
-    (('|#10|) 17)
-    (('b11) 17)
-    ((11) 18)
-    (('|#11|) 19)
-    (('b12) 19)
-    ((12) 20)
-    (('|#12|) 21)
-    (('b13) 21)
-    ((13) 22)
-    (('|#13|) 23))
-
-(defun midi (scale)
-  (list-comp ((<- s scale))
-    (->pitch s)))
-
-(defun get (scale-name start-oct oct-count)
-  (let ((scale (midi
-                (erlang:apply 'um.scale scale-name '())))
-        (last-oct (- (+ start-oct oct-count) 1)))
-    (lists:flatten
-     (list
-      (list-comp ((<- oct (lists:seq start-oct last-oct)))
-        (list-comp ((<- x scale))
-          (um:octave x oct)))
-      (um:octave (car scale) (+ 1 last-oct))))))
