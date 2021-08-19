@@ -62,7 +62,7 @@
   (mref (all) 'ionian))
 
 (defun major ()
-  (mref (all) 'major))
+  (mref (all) 'ionian))
 
 (defun dorian ()
   (mref (all) 'dorian))
