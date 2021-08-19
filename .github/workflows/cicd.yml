@@ -9,6 +9,8 @@ on:
   # Build once a month, just to be sure things are still working
   schedule:
   - cron: "14 3 19 * *"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
 
@@ -19,7 +21,7 @@ jobs:
     strategy:
       matrix:
         otp_version: [19, 20, 21, 22, 23, 24]
-        os: [ubuntu-latest]
+        os: [ubuntu-18.04]
 
     steps:
     - uses: actions/checkout@v2
