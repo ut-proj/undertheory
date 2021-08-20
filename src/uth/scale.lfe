@@ -43,12 +43,20 @@
      relative-minor-pentatonic     (1  3 4  5  7)
      suspended-egyptian-pentatonic (1  2 4  5 b7)
      ;; Bebop
+     bebop-dominant       (1 2  3 4 5   6 b7  7)
+     bebop-dorian         (1 2 b3 3 4   5  6 b7)
+     bebop-major          (1 2  3 4 5 |#5| 6  7)
+     bebop-melodic-minor  (1 2 b3 4 5 |#5| 6  7)
+     bebop-harmonic-minor (1 2 b3 4 5  b6  b7 7)
      ;; Hexatonic
      whole-tone            (1  2 3 |#4| |#5| |#6|)
      symmetrical-augmented (1 b3 3   5  |#5|   7)
      prometheus            (1  2 3 |#4|   6   b7)
      tritone               (1 b2 3  b5    5   b7)
      ;; Diminished/octatonic
+     c#-diminished (|#1| |#2| 3 |#4|  5    6 |#6| |#7|)
+     d-diminished  (  1    2  3   4 |#4| |#5|  6  |#7|)
+     eb-diminished ( b1    2 b3  b4   4    5   6    7)
      ;; Persian
      ;; Messiaen
      ;; Other
@@ -255,6 +263,21 @@
 
 ;;; Bebop
 
+(defun bebop-dominant ()
+  (mref (all) 'bebop-dominant))
+
+(defun bebop-dorian ()
+  (mref (all) 'bebop-dorian))
+
+(defun bebop-major ()
+  (mref (all) 'bebop-major))
+
+(defun bebop-melodic-minor ()
+  (mref (all) 'bebop-melodic-minor))
+
+(defun bebop-harmonic-minor ()
+  (mref (all) 'bebop-harmonic-minor))
+
 ;;; Hexatonic Scales
 
 (defun whole-tone ()
@@ -270,6 +293,15 @@
   (mref (all) 'tritone))
 
 ;;; Diminished/octatonic
+
+(defun c#-diminished ()
+  (mref (all) 'c#-diminished))
+
+(defun d-diminished ()
+  (mref (all) 'd-diminished))
+
+(defun eb-diminished ()
+  (mref (all) 'eb-diminished))
 
 ;;; Persian
 
