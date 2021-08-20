@@ -9,4 +9,18 @@
 (defun thirty-second () 0.03125)
 (defun sixty-fourth () 0.015625)
 
-;; XXX add dotteds
+;; Dotted notes
+(defun dottend-half ()
+  (+ (half) (quarter)))
+
+(defun dottend-quarter ()
+  (+ (quarter) (eigth)))
+
+(defun dottend-eigth ()
+  (+ (eigth) (sixteenth)))
+
+(defun dottend-sixteenth ()
+  (+ (sixteenth) (thirty-second)))
+
+(defun dottend-thirty-second ()
+  (+ (thirty-second) (sixty-fourth)))
