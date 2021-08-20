@@ -1,6 +1,6 @@
 {application, undertheory,
  [{description, "Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc."},
-  {vsn, "0.2.0-dev"},
+  {vsn, "0.2.0-rc1"},
   {registered, []},
   {applications,
    [kernel,
