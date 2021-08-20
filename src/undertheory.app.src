@@ -10,6 +10,9 @@
   {modules, []},
 
   {licenses, ["BSD 2-clause"]},
+  {links, [
+    {"GitHub", "https://github.com/ut-proj/undertheory"}
+  ]},
   {links, []},
   {exclude_files, ["priv/*"]}
  ]}.
