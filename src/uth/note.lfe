@@ -10,6 +10,7 @@
 (defun sixty-fourth () 0.015625)
 
 ;; Dotted notes
+
 (defun dottend-half ()
   (+ (half) (quarter)))
 
