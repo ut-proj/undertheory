@@ -12,6 +12,29 @@
      mixolydian (1  2  3   4  5  6 b7)
      aeolian    (1  2 b3   4  5 b6 b7)
      locrian    (1 b2 b3   4 b5 b6 b7)
+     ;; Natural Minor
+     ;;natural-minor 
+     ;; Melodic Minor
+     melodic-minor-ascending (1  2 b3   4    5  6  7)
+     phrygidorian            (1 b2 b3   4    5  6 b7)
+     lydian-augmented        (1  2  3 |#4| |#5| 6  7)
+     lydian-dominant         (1  2  3 |#4|   5  6 b7)
+     myxaeolian              (1  2  3   4    5 b6 b7)
+     aeolocrian              (1  2 b3   4   b5 b6 b7)
+     super-locrian           (1 b2 b3  b4   b5 b6 b7)
+     ;; Harmonic Minor
+     harmonic-minor     (1   2 b3   4   5 b6   7)
+     locrian-#6         (1  b2 b3   4  b5  6  b7)
+     ionian-#5          (1   2  3   4 |#5| 6   7)
+     ukrainian-dorian   (1   2 b3 |#4|  5  6  b7)
+     phrygian-dominant  (1  b2  3   4   5 b6  b7)
+     lydian-#2          (1 |#2| 3 |#4|  5  6   7)
+     altered-diminished (1  b2 b3  b4  b5 b6 bb7)
+     ;; Harmonic Major
+     harmonic-major (1 2 3 4 5 b6 7)
+     ;; Double Harmonic
+     double-harmonic (1 b2  3   4  5 b6 7)
+     hungarian-minor (1  2 b3 |#4| 5 b6 7)
      ;; Pentatonic
      major-pentatonic              (1  2 3  5  6)
      blues-major-pentatonic        (1  2 4  5  6)
@@ -82,31 +105,124 @@
 (defun locrian ()
   (mref (all) 'locrian))
 
-;;; Melodic minor
-
-(defun phrygian-dominant ()
-  '(1 b2 3 4 5 b6 b7))
-
-(defun gypsy ()
-  (phrygian-dominant))
-
-(defun lydian-dominant ()
-  '(1 2 3 |#4| 5 6 b7))
-
-(defun acoustic ()
-  (lydian-dominant))
+;;; Natural Minor Scales
 
 (defun natural-minor ()
   (aeolian))
 
-(defun harmonic-minor ()
-  '(1 2 b3 4 5 b6 7))
+;;; Melodic Minor Scales
 
 (defun melodic-minor-asc ()
-  '(1 2 b3 4 5 6 7))
+  (mref (all) 'melodic-minor-ascending))
+
+(defun athenian ()
+  (melodic-minor-asc))
+
+(defun jazz-minor ()
+  (melodic-minor-asc))
+
+(defun phrygidorian ()
+  (mref (all) 'phrygidorian))
+
+(defun cappadocian ()
+  (phrygidorian))
+
+(defun assyrian ()
+  (phrygidorian))
+
+(defun lydian-augmented ()
+  (mref (all) 'lydian-augmented))
+
+(defun asgardian ()
+  (lydian-augmented))
+
+(defun lydian-dominant ()
+  (mref (all) 'lydian-dominant))
+
+(defun acoustic ()
+  (lydian-dominant))
+
+(defun overtone ()
+  (lydian-dominant))
+
+(defun lydomyxian ()
+  (lydian-dominant))
+
+(defun pontikonisian ()
+  (lydian-dominant))
+
+(defun myxaeolian ()
+  (mref (all) 'myxaeolian))
+
+(defun melodic-major ()
+  (myxaeolian))
+
+(defun hindu ()
+  (myxaeolian))
+
+(defun aeolian-dominant ()
+  (myxaeolian))
+
+(defun olympian ()
+  (myxaeolian))
+
+(defun aeolocrian ()
+  (mref (all) 'aeolocrian))
+
+(defun half-diminished ()
+  (aeolocrian))
+
+(defun sisyphean ()
+  (aeolocrian))
+
+(defun super-locrian ()
+  (mref (all) 'super-locrian))
+
+(defun altered-dominant ()
+  (super-locrian))
+
+(defun palamidian ()
+  (super-locrian))
 
 (defun melodic-minor-desc ()
-  '(1 2 b3 4 5 b6 b7))
+  (mref (all) 'aeolian))
+
+;;; Harmonic Minor Scales
+
+(defun harmonic-minor ()
+  (mref (all) 'harmonic-minor))
+
+(defun locrian-#6 ()
+  (mref (all) 'locrian-#6))
+
+(defun ionian-#5 ()
+  (mref (all) 'ionian-#5))
+
+(defun ukrainian-dorian ()
+  (mref (all) 'ukrainian-dorian))
+
+(defun phrygian-dominant ()
+  (mref (all) 'phrygian-dominant))
+
+(defun gypsy ()
+  (phrygian-dominant))
+
+(defun lydian-#2 ()
+  (mref (all) 'lydian-#2))
+
+(defun altered-diminished ()
+  (mref (all) 'altered-diminished))
+
+;;; Harmonic Major, etc.
+
+(defun harmonic-major ()
+  (mref (all) 'harmonic-major))
+
+(defun double-harmonic ()
+  (mref (all) 'double-harmonic))
+
+(defun hungarian-minor ()
+  (mref (all) 'hungarian-minor))
 
 ;;; Pentatonic Scales
 
