@@ -43,6 +43,33 @@
      7#b (1 3 |#5| 7)))
 
 
+(defun major ()
+  (mref (all) 'major))
+
+(defun major6 ()
+  (mref (all) 'major6))
+
+(defun major7 ()
+  (mref (all) 'major7))
+
+(defun major9 ()
+  (mref (all) 'major9))
+
+(defun major6/9 ()
+  (mref (all) 'major6/9))
+
+(defun major11 ()
+  (mref (all) 'major11))
+
+(defun major#11 ()
+  (mref (all) 'major#11))
+
+(defun majorb13 ()
+  (mref (all) 'majorb13))
+
+(defun major13 ()
+  (mref (all) 'major13))
+
 ;; 6th add6
 ;; maj#4 maj#11 lydian
 
