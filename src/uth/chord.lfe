@@ -48,7 +48,7 @@
      ))
 
 (defun name (name)
-  (mref (all) name))
+  (maps:get name (all) 'unknown-chord-type))
 
 ;;; Chord Inversions
 
@@ -102,7 +102,9 @@
      locrian #m()))
 
 (defun mode (mode chord)
-  (mref (mref (modes) mode) chord))
+  (case (maps:get mode (modes) 'unknown-mode)
+    ('unknown-mode 'unknown-mode)
+    (mode (maps:get chord mode 'unknwn-mode-chord))))
 
 (defun I () (mode 'ionian 'I))
 (defun ii () (mode 'ionian 'ii))
@@ -127,3 +129,8 @@
    (lists:append notes (list note)))
   ((notes more-notes) (when (is_list more-notes))
    (lists:append notes more-notes)))
+
+(defun chord-or-mode (arg)
+  (case (name arg)
+    ('unknown-chord-type (apply 'uth.chord arg '()))
+    (chord chord)))
