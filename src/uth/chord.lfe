@@ -57,15 +57,15 @@
    (lists:append tail (list head))))
 
 (defun invert (chrd nth)
-  (invert chrd nth 0))
+  (invert chrd nth 0 #'invert/1))
 
 (defun invert
-  ((chrd nth _) (when (< nth 2))
+  ((chrd nth _ _) (when (< nth 2))
    chrd)
-  ((chrd nth count) (when (== nth count))
+  ((chrd nth count _) (when (== nth count))
    chrd)
-  ((chrd nth count)
-   (invert (invert chrd) nth (+ 1 count))))
+  ((chrd nth count inv-func)
+   (invert (funcall inv-func chrd) nth (+ 1 count) inv-func)))
 
 (defun invert-a (chrd)
   chrd)
