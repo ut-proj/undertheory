@@ -76,3 +76,27 @@
 ;; 7th dom
 
 ;; half-dim m7b5
+
+;; Chord inversions
+
+(defun invert
+  ((`(,head . ,tail))
+   (lists:append tail (list (+ 12 head)))))
+
+(defun invert (chrd nth)
+  (invert chrd nth 0))
+
+(defun invert
+  ((chrd nth count) (when (== nth count))
+   chrd)
+  ((chrd nth count)
+   (invert (invert chrd) nth (+ 1 count))))
+
+(defun invert-a (chrd)
+  chrd)
+
+(defun invert-b (chrd)
+  (invert chrd 1))
+
+(defun invert-c (chrd)
+  (invert chrd 2))
