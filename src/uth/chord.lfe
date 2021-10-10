@@ -40,47 +40,21 @@
      m7b5 (1 b3 b5 b7)
      ;; Augmented
      aug (1 3 |#5|)
-     7#b (1 3 |#5| 7)))
+     7#b (1 3 |#5| 7)
+     ;; 6th add6
+     ;; maj#4 maj#11 lydian
+     ;; 7th dom
+     ;; half-dim m7b5
+     ))
 
-(defun major ()
-  (mref (all) 'major))
+(defun name (name)
+  (mref (all) name))
 
-(defun major6 ()
-  (mref (all) 'major6))
-
-(defun major7 ()
-  (mref (all) 'major7))
-
-(defun major9 ()
-  (mref (all) 'major9))
-
-(defun major6/9 ()
-  (mref (all) 'major6/9))
-
-(defun major11 ()
-  (mref (all) 'major11))
-
-(defun major#11 ()
-  (mref (all) 'major#11))
-
-(defun majorb13 ()
-  (mref (all) 'majorb13))
-
-(defun major13 ()
-  (mref (all) 'major13))
-
-;; 6th add6
-;; maj#4 maj#11 lydian
-
-;; 7th dom
-
-;; half-dim m7b5
-
-;; Chord inversions
+;;; Chord Inversions
 
 (defun invert
   ((`(,head . ,tail))
-   (lists:append tail (list (+ 12 head)))))
+   (lists:append tail (list (rem (+ 12 head) 12)))))
 
 (defun invert (chrd nth)
   (invert chrd nth 0))
@@ -100,7 +74,7 @@
 (defun invert-c (chrd)
   (invert chrd 2))
 
-;; Modes
+;;; Modes
 
 (defun modes ()
   #m(ionian #m(I (1 3 5)
@@ -143,3 +117,11 @@
 (defun v () (mode 'aeolian 'v))
 (defun bVI () (mode 'aeolian 'bVI))
 (defun bVII () (mode 'aeolian 'bVII))
+
+;;; Utility functions
+
+(defun add
+  ((notes note) (when (is_integer note))
+   (lists:append notes (list note)))
+  ((notes more-notes) (when (is_list more-notes))
+   (lists:append notes more-notes)))
