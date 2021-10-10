@@ -54,12 +54,14 @@
 
 (defun invert
   ((`(,head . ,tail))
-   (lists:append tail (list (rem (+ 12 head) 12)))))
+   (lists:append tail (list head))))
 
 (defun invert (chrd nth)
   (invert chrd nth 0))
 
 (defun invert
+  ((chrd nth _) (when (< nth 2))
+   chrd)
   ((chrd nth count) (when (== nth count))
    chrd)
   ((chrd nth count)
