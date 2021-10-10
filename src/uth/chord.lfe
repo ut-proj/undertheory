@@ -42,7 +42,6 @@
      aug (1 3 |#5|)
      7#b (1 3 |#5| 7)))
 
-
 (defun major ()
   (mref (all) 'major))
 
@@ -100,3 +99,47 @@
 
 (defun invert-c (chrd)
   (invert chrd 2))
+
+;; Modes
+
+(defun modes ()
+  #m(ionian #m(I (1 3 5)
+               ii (2 4 6)
+               iii (3 5 7)
+               IV (4 6 8)
+               V (5 7 9)
+               vi (6 8 10)
+               viio (7 9 11))
+     ;; TODO
+     dorian #m()
+     phyrgian #m()
+     lydian #m()
+     mixolydian #m()
+     aeolian #m(i (6 8 10)
+                iio (7 9 11)
+                bIII (8 10 12)
+                iv (9 11 13)
+                v (10 12 14)
+                bVI (11 13 15)
+                bVII (12 14 16))
+     ;; TODO
+     locrian #m()))
+
+(defun mode (mode chord)
+  (mref (mref (modes) mode) chord))
+
+(defun I () (mode 'ionian 'I))
+(defun ii () (mode 'ionian 'ii))
+(defun iii () (mode 'ionian 'iii))
+(defun IV () (mode 'ionian 'IV))
+(defun V () (mode 'ionian 'V))
+(defun vi () (mode 'ionian 'vi))
+(defun viio () (mode 'ionian 'viio))
+
+(defun i () (mode 'aeolian 'i))
+(defun iio () (mode 'aeolian 'iio))
+(defun bIII () (mode 'aeolian 'bIII))
+(defun iv () (mode 'aeolian 'iv))
+(defun v () (mode 'aeolian 'v))
+(defun bVI () (mode 'aeolian 'bVI))
+(defun bVII () (mode 'aeolian 'bVII))
