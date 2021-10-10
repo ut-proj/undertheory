@@ -2,10 +2,10 @@ name: ci/cd
 
 on:
   push:
-    branches: [ main, 'release/**', 'task/**', 'feature/**', 'epic/**']
+    branches: [main, 'release/**', 'task/**', 'feature/**', 'epic/**']
     tags: ['**']
   pull_request:
-    branches: [ main, 'release/**', 'task/**', 'feature/**', 'epic/**']
+    branches: [main, 'release/**', 'task/**', 'feature/**', 'epic/**']
   # Build once a month, just to be sure things are still working
   schedule:
   - cron: "14 3 19 * *"
@@ -32,7 +32,7 @@ jobs:
     - name: Check rebar3 Version
       run: rebar3 --version
     - name: Compile
-      run: DIAGNOSTIC=1 rebar3 compile
+      run: rebar3 compile
     - name: Xref Checks
       run: rebar3 xref
     - name: Dialyzer
