@@ -19,7 +19,7 @@ recheck: rebuild check
 rebuild: clean-all build
 
 clean-all: clean
-	@rm -rf _build rebar.lock
+	@rm -rf _build rebar.lock ./ebin
 
 .PHONY: default run build clean-all
 
