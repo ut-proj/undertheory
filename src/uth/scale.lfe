@@ -13,7 +13,7 @@
      aeolian    (1  2 b3   4  5 b6 b7)
      locrian    (1 b2 b3   4 b5 b6 b7)
      ;; Natural Minor
-     ;;natural-minor 
+     ;;natural-minor
      ;; Melodic Minor
      melodic-minor-ascending (1  2 b3   4    5  6  7)
      phrygidorian            (1 b2 b3   4    5  6 b7)
