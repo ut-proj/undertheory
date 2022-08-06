@@ -71,7 +71,7 @@
   (('|#13|) 23)
   (('|##13|) 24)
   ((x)
-   (template->note (- x 8))))
+   (template-note-> (- x 8))))
 
 (defun template-> (template)
   (list-comp
