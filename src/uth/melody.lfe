@@ -62,16 +62,17 @@
 
 (defun first-notes
   ((scale possibles select) (when (> select 0.667))
-   (lists:nth (lists:nth 3 possibles) scale))
+   (list (lists:nth (lists:nth 3 possibles) scale)))
   ((scale possibles select) (when (> select 0.333))
-   (lists:nth (lists:nth 2 possibles) scale))
+   (list (lists:nth (lists:nth 2 possibles) scale)))
   ((scale possibles select)
-   (lists:nth (lists:nth 1 possibles) scale)))
+   (list (lists:nth (lists:nth 1 possibles) scale))))
   
-(defun last-notes (scale)
-  (50-50
-   (list 1 (lists:nth 2 scale))
-   (list 8 (lists:last scale))))
+(defun last-notes
+  ((scale current) (when (> current 3))
+   (list 8 (lists:last scale)))
+  ((scale _)
+   (list 1 (lists:nth 2 scale))))
 
 (defun random-walk (scale)
   (random-walk scale (default-model)))
