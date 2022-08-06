@@ -23,7 +23,7 @@
   (export all))
 
 (defun default-model ()
-  #m(first-note-indices (1 3 5)
+  #m(first-note-indices (1 2 3)
      majority-range 6
      majority-percent 0.6
      max-interval 10
@@ -38,18 +38,19 @@
      chance-for-8th 0.05
      chance-for-direction-change 0.25))
 
-(defun new-model (scale-template)
-  (new-model (default-model)))
+(defun new-model (scale-name)
+  (new-model scale-name (default-model)))
 
-(defun new-model (scale-template model)
-  (let* ((scale (uth.pitch:template-> scale-template))
+(defun new-model (scale-name model)
+  (let* ((scale-template (mref (uth.scale:all) scale-name))
+         (scale (uth.pitch:template-> scale-template))
          (`#m(first ,first-notes index ,starting) (first-notes scale model)))
     (clj:-> model
-            (mupd 'scale scale)
-            (mupd 'first first-notes)
-            (mupd 'starting-index starting)
-            (mupd 'first-count (length first-notes))
-            (mupd 'base-count (base-note-count model)))))
+            (mset 'scale scale)
+            (mset 'first first-notes)
+            (mset 'starting-index starting)
+            (mset 'first-count (length first-notes))
+            (mset 'base-count (base-note-count model)))))
 
 (defun make ()
   "
@@ -75,16 +76,15 @@
   ((scale _)
    (list 1 (lists:nth 2 scale))))
 
-(defun random-walk (scale-template)
-  (random-walk scale-template (default-model)))
+(defun random-walk (scale-name)
+  (random-walk scale-name (default-model)))
 
-(defun random-walk (scale-template model)
-  (random-walk (new-model scale-template model) 0 '()))
+(defun random-walk (scale-name model)
+  (random-walk (new-model scale-name model) 1 '()))
 
 (defun random-walk
-  (((= `#m(scale ,scale) model) previous-index '())
-   (let ((`#m(first ,first index ,index) (first-notes scale model)))
-     (random-walk model index first)))
+  (((= `#m(scale ,scale first ,first) model) previous-index '())
+   (random-walk model previous-index first))
   (((= `#m(scale ,s generate-count ,gc first-count ,fc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
    (lists:reverse (lists:append (last-notes s (car acc)) acc)))
   (((= `#m(scale ,scale) model) previous-index acc)
@@ -114,7 +114,7 @@
   (base-note-count (default-model)))
 
 (defun base-note-count
-  ((`#m(time-sig #(,beats ,note-value) bars ,bars))
+  ((`#m(time-signature #(,beats ,note-value) bars ,bars))
    (* beats bars)))
 
 (defun generate-note-count (scale model)
@@ -131,13 +131,13 @@
 
 (defun first-notes
   ((scale possibles select) (when (> select 0.667))
-   `#m(first (list (lists:nth (lists:nth 3 possibles) scale))
+   `#m(first ,(list (lists:nth (lists:nth 3 possibles) scale))
        index 3))
   ((scale possibles select) (when (> select 0.333))
-   `#m(first (list (lists:nth (lists:nth 2 possibles) scale))
+   `#m(first ,(list (lists:nth (lists:nth 2 possibles) scale))
        index 2))
   ((scale possibles select)
-   `#m(first (list (lists:nth (lists:nth 1 possibles) scale))
+   `#m(first ,(list (lists:nth (lists:nth 1 possibles) scale))
        index 1)))
 
 ;; Utility functions
