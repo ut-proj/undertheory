@@ -68,7 +68,10 @@
   (random-walk scale-name (maps:merge overrides model)))
 
 (defun min (scale)
-  1)
+  (min scale (default-model)))
+
+(defun min (scale model)
+  (* -1 (max model)))
 
 (defun max ()
   (max (default-model)))
@@ -96,7 +99,7 @@
    (lists:reverse (lists:append (last-notes s (car acc)) acc)))
   (((= `#m(scale ,scale) model) previous-index acc)
    (let* ((jump-interval 1)
-          (next-index (next previous-index jump-interval (min scale) (max model))))
+          (next-index (next previous-index jump-interval (min scale model) (max model))))
      (random-walk model
                   next-index
                   (lists:append
