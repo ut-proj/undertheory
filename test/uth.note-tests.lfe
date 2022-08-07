@@ -1,4 +1,4 @@
-(defmodule uth-note-tests
+(defmodule uth.note-tests
   (behaviour ltest-unit)
   (export all))
 
