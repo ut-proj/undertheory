@@ -24,6 +24,7 @@
 
 (defun default-model ()
   #m(first-note-indices (1 2 3)
+     reverse-chance 0.5
      majority-range 6
      majority-percent 0.6
      max-interval 10
@@ -68,10 +69,7 @@
   (random-walk scale-name (maps:merge overrides model)))
 
 (defun min (scale)
-  (min scale (default-model)))
-
-(defun min (scale model)
-  (* -1 (max model)))
+  1)
 
 (defun max ()
   (max (default-model)))
@@ -95,11 +93,14 @@
 (defun random-walk
   (((= `#m(scale ,scale first ,first) model) previous-index '())
    (random-walk model previous-index first))
-  (((= `#m(scale ,s generate-count ,gc first-count ,fc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
-   (lists:reverse (lists:append (last-notes s (car acc)) acc)))
+  (((= `#m(scale ,s generate-count ,gc first-count ,fc reverse-chance ,rc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
+   (let ((walk (lists:reverse (lists:append (last-notes s (car acc)) acc))))
+     (case (>= (rand:normal) rc)
+       ('true (lists:reverse walk))
+       ('false walk))))
   (((= `#m(scale ,scale) model) previous-index acc)
    (let* ((jump-interval 1)
-          (next-index (next previous-index jump-interval (min scale model) (max model))))
+          (next-index (next previous-index jump-interval (min scale) (max model))))
      (random-walk model
                   next-index
                   (lists:append
