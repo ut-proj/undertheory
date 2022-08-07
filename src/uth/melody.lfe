@@ -42,17 +42,17 @@
 (defun new-model (scale-name)
   (new-model scale-name (default-model)))
 
-(defun new-model (scale-name model)
-  (let* ((scale-template (mref (uth.scale:all) scale-name))
-         (scale (uth.pitch:template-> scale-template))
-         (`#m(first ,first-notes index ,starting) (first-notes scale model)))
-    (clj:-> model
-            (mset 'scale scale)
-            (mset 'first first-notes)
-            (mset 'starting-index starting)
-            (mset 'first-count (length first-notes))
-            (mset 'base-count (base-note-count model))
-            (mset 'generate-count (generate-note-count scale model)))))
+(defun new-model
+  ((scale-name (= `#m(max-interval ,i) model))
+   (let* ((scale (uth.sequence:make scale-name `#m(type max interval ,i)))
+          (`#m(first ,first-notes index ,starting) (first-notes scale model)))
+     (clj:-> model
+             (mset 'scale scale)
+             (mset 'first first-notes)
+             (mset 'starting-index starting)
+             (mset 'first-count (length first-notes))
+             (mset 'base-count (base-note-count model))
+             (mset 'generate-count (generate-note-count scale model))))))
 
 (defun make (scale-name)
   "
