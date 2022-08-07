@@ -14,19 +14,22 @@
 ;;;;    0  2  3  5  7  8  10
 ;;;;    0  2  4  5  7  9  11
 ;;;;
-;;;; Doing so makes the maths _a lot_ easier.
+;;;; Doing so makes the maths _a lot_ easier. The only exceptions to this are
+;;;; the various constructor functions.
 ;;;;
-;;;; A such, all scale inputs for the functions in this module should be of the
+;;;; A such, most scale inputs for the functions in this module should be of the
 ;;;; latter form, ready to be mathed.
 
 (defmodule uth.melody
   (export all))
 
 (defun default-model ()
-  #m(first-note-indices (1 2 3)
+  #m(first-note-indices (1 3 5)
+     final-note-count 2
      reverse-chance 0.5
      majority-range 6
      majority-percent 0.6
+     min-interval 1
      max-interval 10
      time-signature #(4 4)
      bars 2
@@ -47,6 +50,7 @@
    (let* ((scale (uth.sequence:make scale-name `#m(type max interval ,i)))
           (`#m(first ,first-notes index ,starting) (first-notes scale model)))
      (clj:-> model
+             (mset 'base-scale-length (length (mref (uth.scale:all) scale-name)))
              (mset 'scale scale)
              (mset 'first first-notes)
              (mset 'starting-index starting)
@@ -68,21 +72,35 @@
 (defun make (scale-name overrides model)
   (random-walk scale-name (maps:merge model overrides)))
 
-(defun min (scale)
-  1)
+(defun min ()
+  (min (default-model)))
+
+(defun min
+  ((`#m(min-interval ,min))
+   (uth.pitch:template-note-> min)))
 
 (defun max ()
   (max (default-model)))
 
 (defun max
   ((`#m(max-interval ,max))
-   max))
-  
+   (uth.pitch:template-note-> max)))
+
+;; TODO: address larger intervals
 (defun last-notes
-  ((scale current) (when (> current 3))
-   (list (uth.pitch:template-note-> 8) (lists:last scale)))
-  ((scale _)
-   (list (uth.pitch:template-note-> 1) (lists:nth 2 scale))))
+  "This returns the final n notes of a scale.
+
+  Note that the results are given in reverse order, since melodies are assembled
+  by pre-pending notes (and reversed in the final step).
+  "
+  ((`#m(scale ()) _)
+   '())
+  ((`#m(scale ,s base-scale-length ,bsl) current) (when (> current 12))
+   (list (uth.pitch:template-note-> 8) (+ (lists:nth 2 s) 12)))
+  ((`#m(scale ,s base-scale-length ,bsl) current) (when (> current 3))
+   (list (uth.pitch:template-note-> 8) (lists:nth bsl s)))
+  ((`#m(scale ,s final-note-count ,fnc) _)
+   (lists:sublist s fnc)))
 
 (defun random-walk (scale-name)
   (random-walk scale-name (default-model)))
@@ -94,13 +112,13 @@
   (((= `#m(scale ,scale first ,first) model) previous-index '())
    (random-walk model previous-index first))
   (((= `#m(scale ,s generate-count ,gc first-count ,fc reverse-chance ,rc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
-   (let ((walk (lists:reverse (lists:append (last-notes s (car acc)) acc))))
+   (let ((walk (lists:reverse (lists:append (last-notes model (car acc)) acc))))
      (case (>= (rand:normal) rc)
        ('true (lists:reverse walk))
        ('false walk))))
   (((= `#m(scale ,scale) model) previous-index acc)
    (let* ((jump-interval 1)
-          (next-index (next previous-index jump-interval (min scale) (max model))))
+          (next-index (next previous-index jump-interval (min model) (max model))))
      (random-walk model
                   next-index
                   (lists:append
@@ -140,6 +158,9 @@
   ((`#m(time-signature #(,beats ,note-value) bars ,bars))
    (* beats bars)))
 
+(defun generate-note-count (scale)
+  (generate-note-count scale (default-model)))
+
 (defun generate-note-count (scale model)
   (- (base-note-count model)
      (length (mref (first-notes scale model) 'first))
@@ -150,18 +171,10 @@
 
 (defun first-notes
   ((scale `#m(first-note-indices ,possibles))
-   (first-notes scale possibles (rand:normal))))
-
-(defun first-notes
-  ((scale possibles select) (when (> select 0.667))
-   `#m(first ,(list (lists:nth (lists:nth 3 possibles) scale))
-       index 3))
-  ((scale possibles select) (when (> select 0.333))
-   `#m(first ,(list (lists:nth (lists:nth 2 possibles) scale))
-       index 2))
-  ((scale possibles select)
-   `#m(first ,(list (lists:nth (lists:nth 1 possibles) scale))
-       index 1)))
+   (let* ((len (length possibles))
+          (index (rand:uniform len)))
+     `#m(first ,(list (lists:nth index possibles))
+         index ,index))))
 
 ;; Utility functions
 
