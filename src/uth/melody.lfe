@@ -66,7 +66,7 @@
   (make scale-name overrides (default-model)))
 
 (defun make (scale-name overrides model)
-  (random-walk scale-name (maps:merge overrides model)))
+  (random-walk scale-name (maps:merge model overrides)))
 
 (defun min (scale)
   1)
