@@ -95,15 +95,13 @@
   (((= `#m(scale ,s generate-count ,gc first-count ,fc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
    (lists:reverse (lists:append (last-notes s (car acc)) acc)))
   (((= `#m(scale ,scale) model) previous-index acc)
-   (let ((next-index (next previous-index (min scale) (max model))))
+   (let ((jump-interval 1)
+         (next-index (next previous-index jump-interval (min scale) (max model))))
      (random-walk model
                   next-index
                   (lists:append
                    (list (lists:nth next-index scale))
                    acc)))))
-
-(defun next (previous-index min max)
-  (next previous-index 1 min max))
 
 (defun next
   ((previous-index jump-interval min _) (when (== previous-index min))
