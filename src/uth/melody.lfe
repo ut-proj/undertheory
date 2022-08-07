@@ -68,7 +68,7 @@
   (random-walk scale-name (maps:merge overrides model)))
 
 (defun min (scale)
-  (car scale))
+  1)
 
 (defun max ()
   (max (default-model)))
