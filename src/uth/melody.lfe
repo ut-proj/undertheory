@@ -95,8 +95,8 @@
   (((= `#m(scale ,s generate-count ,gc first-count ,fc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
    (lists:reverse (lists:append (last-notes s (car acc)) acc)))
   (((= `#m(scale ,scale) model) previous-index acc)
-   (let ((jump-interval 1)
-         (next-index (next previous-index jump-interval (min scale) (max model))))
+   (let* ((jump-interval 1)
+          (next-index (next previous-index jump-interval (min scale) (max model))))
      (random-walk model
                   next-index
                   (lists:append
@@ -113,15 +113,19 @@
     (50-50
      (- previous-index jump-interval)
      (+ previous-index jump-interval))
+    previous-index
+    jump-interval
     min
     max)))
 
 (defun next-check
-  ((val min _) (when (< val min))
+  ((val previous interval min max) (when (== val previous))
+   (next val interval min max))
+  ((val _ _ min _) (when (=< val min))
    min)
-  ((val _ max) (when (> val max))
+  ((val _ _ _ max) (when (>= val max))
    max)
-  ((val _ _) val))
+  ((val _ _ _ _) val))
 
 ;; Supporting constructor functions
 
