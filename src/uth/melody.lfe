@@ -110,10 +110,20 @@
    (+ min jump-interval))
   ((previous-index jump-interval _ max) (when (== previous-index max))
    (- max jump-interval))
-  ((previous-index jump-interval _ _)
-   (50-50
-    (- previous-index jump-interval)
-    (+ previous-index jump-interval))))
+  ((previous-index jump-interval min max)
+   (next-check
+    (50-50
+     (- previous-index jump-interval)
+     (+ previous-index jump-interval))
+    min
+    max)))
+
+(defun next-check
+  ((val min _) (when (< val min))
+   min)
+  ((val _ max) (when (> val max))
+   max)
+  ((val _ _) val))
 
 ;; Supporting constructor functions
 
