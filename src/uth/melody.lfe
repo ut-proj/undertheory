@@ -50,7 +50,8 @@
             (mset 'first first-notes)
             (mset 'starting-index starting)
             (mset 'first-count (length first-notes))
-            (mset 'base-count (base-note-count model)))))
+            (mset 'base-count (base-note-count model))
+            (mset 'generate-count (generate-note-count scale model)))))
 
 (defun make (scale-name)
   "
@@ -125,7 +126,7 @@
 
 (defun generate-note-count (scale model)
   (- (base-note-count model)
-     (length (first-notes scale model))
+     (length (mref (first-notes scale model) 'first))
      2))
 
 (defun first-notes (scale)
