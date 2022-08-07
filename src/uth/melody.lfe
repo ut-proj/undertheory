@@ -80,9 +80,9 @@
   
 (defun last-notes
   ((scale current) (when (> current 3))
-   (list 8 (lists:last scale)))
+   (list (uth.pitch:template-note-> 8) (lists:last scale)))
   ((scale _)
-   (list 1 (lists:nth 2 scale))))
+   (list (uth.pitch:template-note-> 1) (lists:nth 2 scale))))
 
 (defun random-walk (scale-name)
   (random-walk scale-name (default-model)))
