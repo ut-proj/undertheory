@@ -52,13 +52,19 @@
             (mset 'first-count (length first-notes))
             (mset 'base-count (base-note-count model)))))
 
-(defun make ()
+(defun make (scale-name)
   "
      lfe> (uth.melody:make #m(bars 4)
      
 
   "
-  )
+  (make scale-name #m()))
+
+(defun make (scale-name overrides)
+  (make scale-name overrides (default-model)))
+
+(defun make (scale-name overrides model)
+  (random-walk scale-name (maps:merge overrides model)))
 
 (defun min (scale)
   (car scale))
