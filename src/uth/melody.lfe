@@ -61,7 +61,7 @@
 (defun make (scale-name)
   "
      lfe> (uth.melody:make #m(bars 4)
-     
+
 
   "
   (make scale-name #m()))
@@ -114,7 +114,7 @@
   (((= `#m(scale ,s generate-count ,gc first-count ,fc reverse-chance ,rc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
    (let ((walk (lists:reverse (lists:append (last-notes model (car acc)) acc))))
      (case (>= (rand:normal) rc)
-       ('true (lists:reverse walk))
+       ('true (invert scale walk))
        ('false walk))))
   (((= `#m(scale ,scale) model) previous-index acc)
    (let* ((jump-interval 1)
@@ -148,6 +148,16 @@
   ((val _ _ _ max) (when (>= val max))
    max)
   ((val _ _ _ _) val))
+
+;; TODO: replace this with something that genuinely inverts the melody
+(defun invert (scale melody)
+  (lists:reverse melody))
+
+(defun reverse (scale melody)
+  (let ((es (extend-scale scale (ceil (/ (length melody) 12)))))
+    (list-comp
+      ((<- x (transpose (offsets melody) 12)))
+      (lists:nth x es))))
 
 ;; Supporting constructor functions
 
@@ -183,5 +193,55 @@
     ('true choice-1)
     ('false choice-2)))
 
+(defun offsets
+  "This generates a list of offsets, relative to the first note of a melody."
+  (((= `(,first . ,_) melody))
+   (list-comp
+     ((<- x melody))
+     (- x first))))
+
+(defun inverse-offsets (melody)
+  (list-comp
+    ((<- x (offsets melody)))
+    (* x -1)))
+
+(defun transpose (melody offset)
+  (list-comp
+    ((<- x melody))
+    (+ offset x)))
+
+(defun extend-scale (scale times)
+  "This function takes a scale and extends it by the given amount.
+
+  Note that this creates duplicate entries (due to overlap), so these are
+  removed by uniquing this result."
+  (lists:sort
+    (lists:uniq
+      (list-comp
+        ((<- x scale)
+         (<- y (lists:seq 0 (- times 1))))
+        (+ (* y 12) x)))))
+
+(defun get-transpose-val
+  ((min) (when (>= min 0))
+   0)
+  ((min)
+   (* 12 (+ 1 (div (abs min) 12)))))
+
+(defun get-scale-val (max)
+  (+ 1 (div max 12)))
+
+(defun indexed-scale (scale melody)
+  (maps:from_list
+   (lists:foldl
+    (match-lambda
+      ((x '())
+       `(#(,x 1)))
+      ((x (= `(#(,_ ,last) . ,_) acc))
+       (lists:append `(#(,x ,(+ 1 last))) acc)))
+    '()
+    (extend-scale scale (get-scale-val (lists:max melody))))))
+
 ;; TODO:
 ;; - reduce over state ... current notes, min, max, count, % in range
+
