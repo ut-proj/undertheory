@@ -149,9 +149,15 @@
    max)
   ((val _ _ _ _) val))
 
-;; TODO: replace this with something that genuinely inverts the melody
 (defun invert (scale melody)
-  (lists:reverse melody))
+  (let* ((lookup (indexed-scale scale melody))
+         (melody-indices (list-comp ((<- p melody)) (mref lookup p)))
+         (inv-offs (inverse-offsets (offsets melody-indices)))
+         (t-val (get-transpose-val (lists:min inv-offs)))
+         (trans-offs (transpose inv-offs t-val))
+         (scale-x (extend-scale scale (get-scale-val (lists:max trans-offs))))
+         (unadj-inverted-melody (lists:map (lambda (x) (lists:nth x scale-x)) trans-offs)))
+    (transpose unadj-inverted-melody (* -1 t-val))))
 
 (defun reverse (scale melody)
   (let ((es (extend-scale scale (ceil (/ (length melody) 12)))))
