@@ -149,21 +149,18 @@
    max)
   ((val _ _ _ _) val))
 
-(defun invert (scale melody)
-  (let* ((lookup (indexed-scale scale melody))
-         (melody-indices (list-comp ((<- p melody)) (mref lookup p)))
-         (inv-offs (inverse-offsets (offsets melody-indices)))
-         (t-val (get-transpose-val (lists:min inv-offs)))
-         (trans-offs (transpose inv-offs t-val))
-         (scale-x (extend-scale scale (get-scale-val (lists:max trans-offs))))
-         (unadj-inverted-melody (lists:map (lambda (x) (lists:nth x scale-x)) trans-offs)))
-    (transpose unadj-inverted-melody (* -1 t-val))))
-
-(defun reverse (scale melody)
-  (let ((es (extend-scale scale (ceil (/ (length melody) 12)))))
-    (list-comp
-      ((<- x (transpose (offsets melody) 12)))
-      (lists:nth x es))))
+(defun invert
+  (((= `#m(scale ,s base-scale-length ,bsl) model) melody)
+   (let* ((melody-indices (index-melody model melody))
+          (rel-inv-offsets (inverse-offsets (offsets melody-indices)))
+          (inv-offsets (list-comp ((<- x rel-inv-offsets)) (+ (car melody-indices) x)))
+          (t-val (get-transpose-val (lists:min inv-offsets)))
+          (trans-offsets (transpose inv-offsets t-val))
+          (scale-x (extend-scale s (get-scale-val (lists:max trans-offsets))))
+          (unadj-inverted-melody (list-comp ((<- x inv-offsets)) (lists:nth (+ x bsl) scale-x))))
+     (inverted-last-notes
+      model
+      (transpose unadj-inverted-melody (* -1 t-val))))))
 
 ;; Supporting constructor functions
 
@@ -237,17 +234,31 @@
 (defun get-scale-val (max)
   (+ 1 (div max 12)))
 
-(defun indexed-scale (scale melody)
-  (maps:from_list
-   (lists:foldl
-    (match-lambda
-      ((x '())
-       `(#(,x 1)))
-      ((x (= `(#(,_ ,last) . ,_) acc))
-       (lists:append `(#(,x ,(+ 1 last))) acc)))
-    '()
-    (extend-scale scale (get-scale-val (lists:max melody))))))
+(defun index-scale
+  ((`#m(scale ,s) melody)
+   (maps:from_list
+    (lists:foldl
+     (match-lambda
+       ((x '())
+        `(#(,x 1)))
+       ((x (= `(#(,_ ,last) . ,_) acc))
+        (lists:append `(#(,x ,(+ 1 last))) acc)))
+     '()
+     (extend-scale s (get-scale-val (lists:max melody)))))))
 
-;; TODO:
-;; - reduce over state ... current notes, min, max, count, % in range
+(defun index-melody (model melody)
+  (let ((lookup (index-scale model melody)))
+    (list-comp ((<- p melody)) (mref lookup p))))
+
+(defun inverted-last-notes
+  "This adjusts an inverted melody so that the last note falls on the tonic."
+  ((`#m(scale ,s base-scale-length ,bsl) melody)
+   (let ((head (lists:sublist melody (- (length melody) 2))))
+     (case (lists:last head)
+       (x (when (> x 12))
+        (lists:append head (list (+ 12 (lists:nth 2 s)) (+ 12 (car s)))))
+       (x (when (> x 3))
+        (lists:append head (list (lists:nth bsl s) (+ 12 (car s)))))
+       (x
+        (lists:append head (list (lists:nth 2 s) (car s))))))))
 
