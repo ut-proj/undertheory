@@ -431,6 +431,10 @@ ext-scale
   (io:format "~p\n" (list generator-fn))
   (funcall generator-fn model)))
 
+(set model (uth.melody:new-model
+             scale-name
+             (mupd (uth.melody:default-model) 'bars 4)))
+
 (set opts `#m(
   octave 4
   vel 50
@@ -438,7 +442,8 @@ ext-scale
 
 (let ((`#m(octave ,octave vel ,vel dur ,dur) opts)
       (melody (uth.melody:random-walk model)))
-  (lfe_io:format "Generated melody: \n  ~p\n" (list melody))
+  (lfe_io:format "\nGenerated melody: \n  ~p\n" (list melody))
+  (lfe_io:format "Generated melody length: \n  ~p\\nn" (list (length melody)))
   (list-comp
     ((<- pitch melody))
     (um.note:play (+ (* octave 12) pitch) vel dur))

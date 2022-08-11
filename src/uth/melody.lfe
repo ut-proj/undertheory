@@ -24,7 +24,7 @@
   (export all))
 
 (defun default-model ()
-  `#m(generator-mf (uth.melody random-walk)
+  `#m(generator-fn ,#'uth.melody:random-walk/1
      default-scale 'aeolian
      first-note-indices (1 3 5)
      final-note-count 2
@@ -75,8 +75,8 @@
   (new-model scale-name (maps:merge model overrides)))
 
 (defun run
- (((= `#m(generator-mf ,generator-mf) model))
-  (call (lists:append generator-mf (list model)))))
+ (((= `#m(generator-fn ,generator-fn) model))
+  (funcall generator-fn model)))
 
 (defun min ()
   (min (default-model)))
@@ -110,9 +110,9 @@
 
 
 (defun random-walk
-  ((`#m(scale ,s min-interval ,min max-interval ,max generate-count ,gc))
+  ((`#m(scale ,s min-interval ,min max-interval ,max base-count ,bc))
    (let ((scale (extend-scale s 3)))
-     (list-comp ((<- x (lists:reverse (random-walk min max gc '(0)))))
+     (list-comp ((<- x (lists:reverse (random-walk min max bc '(0)))))
        (- (lists:nth (+ x 12) scale) 12)))))
 
 (defun random-walk
