@@ -124,11 +124,11 @@
        (x (when (>= x ic)) (invert model with-last-notes))
        (_ with-last-notes)))))
 
-(defun random-walk
+(defun random-step
  ((min max max-count acc) (when (>= (length acc) max-count))
    (lists:reverse acc))
  ((min max max-count (= `(,prev . ,_) acc))
-   (random-walk min
+   (random-step min
                 max
                 max-count
                 (lists:append (list (next min max prev)) acc))))
