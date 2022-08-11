@@ -28,7 +28,7 @@
      default-scale 'aeolian
      first-note-indices (1 3 5)
      final-note-count 2
-     reverse-chance 0.5
+     invert-chance 0.5
      majority-range 6
      majority-percent 0.6
      min-interval 1
@@ -108,16 +108,25 @@
   ((`#m(scale ,s final-note-count ,fnc) _)
    (list (lists:nth 2 s) (car s))))
 
+(defun replace-last-notes
+ (((= `#m(base-count ,bc final-note-count ,fnc) model) melody)
+  (lists:append (lists:sublist melody (- bc fnc))
+                (last-notes model (lists:nth bc melody)))))
 
 (defun random-walk
-  ((`#m(scale ,s min-interval ,min max-interval ,max base-count ,bc))
-   (let ((scale (extend-scale s 3)))
-     (list-comp ((<- x (lists:reverse (random-walk min max bc '(0)))))
-       (- (lists:nth (+ x 12) scale) 12)))))
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-change ,ic) model))
+   (let* ((mult (scale-mult max))
+          (scale (extend-scale s scale-mult))
+          (raw (list-comp ((<- x (random-walk min max bc '(0))))
+                 (- (lists:nth (+ x 12) scale) 12)))
+          (with-last-notes (replace-last-notes model raw)))
+     (case (rand:uniform_real)
+       (x (when (>= x ic)) (invert model with-last-notes))
+       (_ with-last-notes)))))
 
 (defun random-walk
  ((min max max-count acc) (when (>= (length acc) max-count))
-   acc)
+   (lists:reverse acc))
  ((min max max-count (= `(,prev . ,_) acc))
    (random-walk min
                 max
@@ -174,6 +183,9 @@
 
 ;; Utility functions
 
+(defun scale-mult (max)
+  (+ 2 (ceil (/ max 12))))
+
 (defun direction ()
   (case (rand:uniform 2)
     (1 1)
@@ -199,8 +211,8 @@
 (defun extend-scale (scale times)
   "This function takes a scale and extends it by the given amount.
 
-  Note that this creates duplicate entries (due to overlap), so these are
-  removed by uniquing this result."
+  Note that the method employed creates duplicate entries (due to overlap),
+  so these are removed by uniquing this result."
   (lists:sort
     (lists:uniq
       (list-comp

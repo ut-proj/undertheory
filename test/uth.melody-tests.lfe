@@ -38,3 +38,16 @@
     (is-equal '(12 10) (uth.melody:last-notes m (lists:nth 8 s)))
     (is-equal '(12 14) (uth.melody:last-notes m (lists:nth 9 s)))
     (is-equal '(12 14) (uth.melody:last-notes m (lists:nth 10 s)))))
+
+(deftest scale-mult
+  (is-equal 0 (uth.melody:scale-mult 0))
+  (is-equal 0 (uth.melody:scale-mult 1))
+  (is-equal 0 (uth.melody:scale-mult 2))
+  (is-equal 0 (uth.melody:scale-mult 3)))
+
+(deftest extend-scale
+  (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 0))
+  (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 1))
+  (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 2))
+  (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 3)))
+

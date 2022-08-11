@@ -431,6 +431,14 @@ ext-scale
   (io:format "~p\n" (list generator-fn))
   (funcall generator-fn model)))
 
+(undermidi:start)
+(progn
+  (um:set-device 0)
+  (um:set-channel 0)
+  'ok)
+
+(set scale-name 'aeolian)
+
 (set model (uth.melody:new-model
              scale-name
              (mupd (uth.melody:default-model) 'bars 4)))
@@ -449,14 +457,47 @@ ext-scale
     (um.note:play (+ (* octave 12) pitch) vel dur))
   'ok)
 
-(defun inverted-last-notes
-  "This adjusts an inverted melody so that the last note falls on the tonic."
-  ((`#m(scale ,s base-scale-length ,bsl) melody)
-   (let ((head (lists:sublist melody (- (length melody) 2))))
-     (case (lists:last head)
-       (x (when (> x 12))
-        (lists:append head (list (+ 12 (lists:nth 2 s)) (+ 12 (car s)))))
-       (x (when (> x 3))
-        (lists:append head (list (lists:nth bsl s) (+ 12 (car s)))))
-       (x
-        (lists:append head (list (lists:nth 2 s) (car s))))))))
+;; -----------------------------------------------------------------------
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((scale-mult (+ 2 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (steps (list-comp ((<- x (random-step min max bc '(0)))) x)))
+      steps)))
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((scale-mult (+ 2 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (raw (list-comp ((<- x (random-walk min max bc '(0))))
+                 (- (lists:nth (+ x 12) scale) 12))))
+      raw)))
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((scale-mult (+ 2 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (raw (list-comp ((<- x (random-walk min max bc '(0))))
+                 (- (lists:nth (+ x 12) scale) 12)))
+          (with-last-notes (replace-last-notes model raw)))
+     (case (rand:uniform_real)
+       (x (when (>= x ic)) (invert model with-last-notes))
+       (_ with-last-notes)))))
+
+(defun random-walk
+ ((min max max-count acc) (when (>= (length acc) max-count))
+   (lists:reverse acc))
+ ((min max max-count (= `(,prev . ,_) acc))
+   (random-walk min
+                max
+                max-count
+                (lists:append (list (next min max prev)) acc))))
+
+(defun next
+ ((min _ prev) (when (=< prev min))
+  (+ prev 1))
+ ((_ max prev) (when (>= prev max))
+  (- prev 1))
+ ((_ _ prev)
+  (+ prev (direction))))
