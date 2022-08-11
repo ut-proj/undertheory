@@ -356,14 +356,13 @@ ext-scale
 (-1 -1 -1 1 -1 -1 1 1 -1 -1 -1 -1 -1 1 1 -1 -1 1 -1 -1)
 
 (defun random-walk
-  ((`#m(scale ,s) min max)
-   (let ((max-count (uth.melody:base-note-count model))
-         (scale (extend-scale s 3)))
-     (list-comp ((<- x (lists:reverse (random-walk min max max-count '(0)))))
+  ((`#m(scale ,s min-interval ,min max-interval ,max generate-count ,gc))
+   (let ((scale (extend-scale s 3)))
+     (list-comp ((<- x (lists:reverse (random-walk min max gc '(0)))))
        (- (lists:nth (+ x 12) scale) 12)))))
 
 (defun random-walk
- ((min max max-count acc) (when (>= (length acc) max))
+ ((min max max-count acc) (when (>= (length acc) max-count))
    acc)
  ((min max max-count (= `(,prev . ,_) acc))
    (random-walk min
@@ -379,7 +378,9 @@ ext-scale
  ((_ _ prev)
   (+ prev (direction))))
 
-(random-walk model 0 10)
+(set model (uth.melody:new-model
+             scale-name
+             (mupd (uth.melody:default-model) 'bars 4)))
 
 (set opts `#m(
   octave 4

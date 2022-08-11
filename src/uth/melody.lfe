@@ -24,7 +24,9 @@
   (export all))
 
 (defun default-model ()
-  #m(first-note-indices (1 3 5)
+  `#m(generator-mf (uth.melody random-walk)
+     default-scale 'aeolian
+     first-note-indices (1 3 5)
      final-note-count 2
      reverse-chance 0.5
      majority-range 6
@@ -70,7 +72,11 @@
   (make scale-name overrides (default-model)))
 
 (defun make (scale-name overrides model)
-  (random-walk scale-name (maps:merge model overrides)))
+  (new-model scale-name (maps:merge model overrides)))
+
+(defun run
+ (((= `#m(generator-fn ,generator-fn) model))
+  (apply generator-fn (list model))))
 
 (defun min ()
   (min (default-model)))
@@ -102,52 +108,29 @@
   ((`#m(scale ,s final-note-count ,fnc) _)
    (lists:sublist s fnc)))
 
-(defun random-walk (scale-name)
-  (random-walk scale-name (default-model)))
-
-(defun random-walk (scale-name model)
-  (random-walk (new-model scale-name model) 1 '()))
 
 (defun random-walk
-  (((= `#m(scale ,scale first ,first) model) previous-index '())
-   (random-walk model previous-index first))
-  (((= `#m(scale ,s generate-count ,gc first-count ,fc reverse-chance ,rc) model) previous-index acc) (when (== (length acc) (+ gc fc)))
-   (let ((walk (lists:reverse (lists:append (last-notes model (car acc)) acc))))
-     (case (>= (rand:normal) rc)
-       ('true (invert scale walk))
-       ('false walk))))
-  (((= `#m(scale ,scale) model) previous-index acc)
-   (let* ((jump-interval 1)
-          (next-index (next previous-index jump-interval (min model) (max model))))
-     (random-walk model
-                  next-index
-                  (lists:append
-                   (list (lists:nth next-index scale))
-                   acc)))))
+  ((`#m(scale ,s min-interval ,min max-interval ,max generate-count ,gc))
+   (let ((scale (extend-scale s 3)))
+     (list-comp ((<- x (lists:reverse (random-walk min max gc '(0)))))
+       (- (lists:nth (+ x 12) scale) 12)))))
+
+(defun random-walk
+ ((min max max-count acc) (when (>= (length acc) max-count))
+   acc)
+ ((min max max-count (= `(,prev . ,_) acc))
+   (random-walk min
+                max
+                max-count
+                (lists:append (list (next min max prev)) acc))))
 
 (defun next
-  ((previous-index jump-interval min _) (when (== previous-index min))
-   (+ min jump-interval))
-  ((previous-index jump-interval _ max) (when (== previous-index max))
-   (- max jump-interval))
-  ((previous-index jump-interval min max)
-   (next-check
-    (50-50
-     (- previous-index jump-interval)
-     (+ previous-index jump-interval))
-    previous-index
-    jump-interval
-    min
-    max)))
-
-(defun next-check
-  ((val previous interval min max) (when (== val previous))
-   (next val interval min max))
-  ((val _ _ min _) (when (=< val min))
-   min)
-  ((val _ _ _ max) (when (>= val max))
-   max)
-  ((val _ _ _ _) val))
+ ((min _ prev) (when (=< prev min))
+  (+ prev 1))
+ ((_ max prev) (when (>= prev max))
+  (- prev 1))
+ ((_ _ prev)
+  (+ prev (direction))))
 
 (defun invert
   (((= `#m(scale ,s base-scale-length ,bsl) model) melody)
@@ -191,10 +174,10 @@
 
 ;; Utility functions
 
-(defun 50-50 (choice-1 choice-2)
-  (case (>= (rand:normal) 0.5)
-    ('true choice-1)
-    ('false choice-2)))
+(defun direction ()
+  (case (rand:uniform 2)
+    (1 1)
+    (2 -1)))
 
 (defun offsets
   "This generates a list of offsets, relative to the first note of a melody."
