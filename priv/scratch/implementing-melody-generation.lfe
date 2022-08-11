@@ -394,3 +394,64 @@ ext-scale
 
 ;; -----------------------------------------------------------------------
 
+(defun default-model ()
+  `#m(generator-fn #'uth.melody:random-walk/1
+      default-scale 'aeolian
+      min-interval 1
+      max-interval 10
+      time-signature #(4 4)
+      bars 2
+      first-note-indices (1 3 5)
+      majority-range 6
+      majority-percent 0.6
+      reverse-chance 0.5
+      chance-for-2nd 0.5
+      chance-for-3rd 0.2
+      chance-for-4th 0.1
+      chance-for-5th 0.1
+      chance-for-6th 0.025
+      chance-for-7th 0.025
+      chance-for-8th 0.05
+      chance-for-direction-change 0.25
+      final-note-count 2))
+
+(set model (uth.melody:new-model
+             scale-name
+             (mupd (default-model) 'bars 4)))
+(defun run
+ (((= `#m(generator-mf ,generator-mf) model))
+  (call (lists:append generator-mf (list model)))))
+
+(defun run
+ (((= `#m(generator-fn ,generator-fn) model))
+  (apply generator-fn (list model))))
+
+(defun run
+ (((= `#m(generator-fn ,generator-fn) model))
+  (io:format "~p\n" (list generator-fn))
+  (funcall generator-fn model)))
+
+(set opts `#m(
+  octave 4
+  vel 50
+  dur 750))
+
+(let ((`#m(octave ,octave vel ,vel dur ,dur) opts)
+      (melody (uth.melody:random-walk model)))
+  (lfe_io:format "Generated melody: \n  ~p\n" (list melody))
+  (list-comp
+    ((<- pitch melody))
+    (um.note:play (+ (* octave 12) pitch) vel dur))
+  'ok)
+
+(defun inverted-last-notes
+  "This adjusts an inverted melody so that the last note falls on the tonic."
+  ((`#m(scale ,s base-scale-length ,bsl) melody)
+   (let ((head (lists:sublist melody (- (length melody) 2))))
+     (case (lists:last head)
+       (x (when (> x 12))
+        (lists:append head (list (+ 12 (lists:nth 2 s)) (+ 12 (car s)))))
+       (x (when (> x 3))
+        (lists:append head (list (lists:nth bsl s) (+ 12 (car s)))))
+       (x
+        (lists:append head (list (lists:nth 2 s) (car s))))))))

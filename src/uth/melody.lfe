@@ -75,8 +75,8 @@
   (new-model scale-name (maps:merge model overrides)))
 
 (defun run
- (((= `#m(generator-fn ,generator-fn) model))
-  (apply generator-fn (list model))))
+ (((= `#m(generator-mf ,generator-mf) model))
+  (call (lists:append generator-mf (list model)))))
 
 (defun min ()
   (min (default-model)))
@@ -102,11 +102,11 @@
   ((`#m(scale ()) _)
    '())
   ((`#m(scale ,s base-scale-length ,bsl) current) (when (> current 12))
-   (list (uth.pitch:template-note-> 8) (+ (lists:nth 2 s) 12)))
+   (list (+ 12 (car s)) (+ 12 (lists:nth 2 s))))
   ((`#m(scale ,s base-scale-length ,bsl) current) (when (> current 3))
-   (list (uth.pitch:template-note-> 8) (lists:nth bsl s)))
+   (list (+ 12 (car s)) (lists:nth bsl s)))
   ((`#m(scale ,s final-note-count ,fnc) _)
-   (lists:sublist s fnc)))
+   (list (lists:nth 2 s) (car s))))
 
 
 (defun random-walk
