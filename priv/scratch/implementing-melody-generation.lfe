@@ -461,26 +461,52 @@ ext-scale
 
 (defun random-walk
   (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((steps (random-step min max bc '(0)))
+          (adj (last-steps steps)))
+      adj)))
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
    (let* ((scale-mult (+ 2 (ceil (/ max 12))))
           (scale (extend-scale s scale-mult))
-          (steps (list-comp ((<- x (random-step min max bc '(0)))) x)))
+          (steps (random-step min max bc '(0))))
       steps)))
 
 (defun random-walk
   (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
-   (let* ((scale-mult (+ 2 (ceil (/ max 12))))
+   (let* ((steps (random-step min max bc '(0)))
+          (adj (last-steps steps))
+          (scale-mult (+ 2 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult)))
+      adj)))
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((steps (random-step min max bc '(0)))
+          (adj (last-steps steps))
+          (scale-mult (+ 2 (ceil (/ max 12))))
           (scale (extend-scale s scale-mult))
-          (raw (list-comp ((<- x (random-walk min max bc '(0))))
-                 (- (lists:nth (+ x 12) scale) 12))))
-      raw)))
+          (pitches (list-comp ((<- x adj)) (lists:nth (+ x 12) scale))))
+      `#m(pitches ,pitches steps ,adj scale ,scale))))
 
 (defun random-walk
   (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
    (let* ((scale-mult (+ 2 (ceil (/ max 12))))
           (scale (extend-scale s scale-mult))
-          (raw (list-comp ((<- x (random-walk min max bc '(0))))
-                 (- (lists:nth (+ x 12) scale) 12)))
-          (with-last-notes (replace-last-notes model raw)))
+          (steps (list-comp ((<- x (random-step min max bc (first-indices model))))
+                            (- (lists:nth (+ x 12) scale) 12))))
+      steps)))
+
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((scale-mult (+ 2 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (steps (random-step min max bc (first-indices model)))
+          )
+      steps)))
+
+          (with-last-notes (replace-last-notes model steps)))
      (case (rand:uniform_real)
        (x (when (>= x ic)) (invert model with-last-notes))
        (_ with-last-notes)))))
@@ -501,3 +527,19 @@ ext-scale
   (- prev 1))
  ((_ _ prev)
   (+ prev (direction))))
+
+(defun first-notes
+  ((`#m(first-note-indices ,possibles))
+   (let* ((len (length possibles))
+          (index (rand:uniform len)))
+     `#m(first ,(list (lists:nth index possibles))
+         index ,index))))
+
+(let ((`#m(octave ,octave vel ,vel dur ,dur) opts)
+      (melody (random-walk model)))
+  (lfe_io:format "\nGenerated melody: \n  ~p\n" (list melody))
+  (lfe_io:format "Generated melody length: \n  ~p\n\n" (list (length melody)))
+  (list-comp
+    ((<- pitch melody))
+    (um.note:play (+ (* octave 12) pitch) vel dur))
+  'ok)

@@ -171,15 +171,22 @@
      (length (mref (first-notes scale model) 'first))
      2))
 
-(defun first-notes (scale)
-  (first-notes scale (default-model)))
+(defun first-notes ()
+  (first-notes (default-model)))
 
 (defun first-notes
-  ((scale `#m(first-note-indices ,possibles))
+  ((`#m(first-note-indices ,possibles))
    (let* ((len (length possibles))
           (index (rand:uniform len)))
      `#m(first ,(list (lists:nth index possibles))
          index ,index))))
+
+(defun first-indices ()
+  (first-indices (default-model)))
+
+(defun first-indices
+  ((`#m(first-note-indices ,possibles))
+   (list (lists:nth (rand:uniform (length possibles)) possibles))))
 
 ;; Utility functions
 
@@ -257,3 +264,13 @@
        (x
         (lists:append head (list (lists:nth 2 s) (car s))))))))
 
+(defun last-steps (steps)
+  "This adjusts an inverted melody so that the last note falls on the tonic."
+   (let ((head (lists:sublist steps (- (length steps) 2))))
+     (case (lists:last head)
+       (x (when (> x 8))
+        (lists:append head (list 9 8)))
+       (x (when (> x 3))
+        (lists:append head (list 7 8)))
+       (x
+        (lists:append head (list 1 0))))))

@@ -50,4 +50,3 @@
   (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 1))
   (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 2))
   (is-equal 0 (uth.melody:extend-scale '(1 2 3 4 5) 3)))
-
