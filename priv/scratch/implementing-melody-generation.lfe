@@ -491,24 +491,15 @@ ext-scale
           (scale (extend-scale s scale-mult))
           (indexed (maps:from_list (lists:enumerate scale)))
           (pitches (list-comp ((<- x shifted)) (mref indexed (+ 12 x))))
-          (pitches-reversed (list-comp ((<- x shifted-reversed)) (mref indexed (+ 12 x))))
-          )
-      `#m(
-          steps ,adj
+          (pitches-reversed (list-comp ((<- x shifted-reversed)) (mref indexed (+ 12 x)))))
+      `#m(steps ,adj
           steps-reversed ,adj-reversed
           shifted ,shifted
           shifted-reversed ,shifted-reversed
           scale ,scale
           indexed ,indexed
           pitches ,pitches
-          pitches-reversed ,pitches-reversed
-          ))))
-
-
-          (with-last-notes (replace-last-notes model steps)))
-     (case (rand:uniform_real)
-       (x (when (>= x ic)) (invert model with-last-notes))
-       (_ with-last-notes)))))
+          pitches-reversed ,pitches-reversed))))
 
 (defun random-walk
  ((min max max-count acc) (when (>= (length acc) max-count))
@@ -573,3 +564,6 @@ ext-scale
         ('true (um.note:play note vel dur))
         (_ (um.chord:play (list note inote) vel dur)))))
   'ok)
+
+;; -----------------------------------------------------------------------
+

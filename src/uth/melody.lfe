@@ -114,15 +114,25 @@
                 (last-notes model (lists:nth bc melody)))))
 
 (defun random-walk
-  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-change ,ic) model))
-   (let* ((mult (scale-mult max))
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((steps (random-step min max bc '(0)))
+          (adj (last-steps steps))
+          (adj-reversed (last-steps (lists:reverse adj)))
+          (shifted (list-comp ((<- x adj)) (+ 1 x)))
+          (shifted-reversed (list-comp ((<- x adj-reversed)) (+ 1 x)))
+          (scale-mult (+ 2 (ceil (/ max 12))))
           (scale (extend-scale s scale-mult))
-          (raw (list-comp ((<- x (random-walk min max bc '(0))))
-                 (- (lists:nth (+ x 12) scale) 12)))
-          (with-last-notes (replace-last-notes model raw)))
-     (case (rand:uniform_real)
-       (x (when (>= x ic)) (invert model with-last-notes))
-       (_ with-last-notes)))))
+          (indexed (maps:from_list (lists:enumerate scale)))
+          (pitches (list-comp ((<- x shifted)) (mref indexed (+ 12 x))))
+          (pitches-reversed (list-comp ((<- x shifted-reversed)) (mref indexed (+ 12 x)))))
+      `#m(steps ,adj
+          steps-reversed ,adj-reversed
+          shifted ,shifted
+          shifted-reversed ,shifted-reversed
+          scale ,scale
+          indexed ,indexed
+          pitches ,pitches
+          pitches-reversed ,pitches-reversed))))
 
 (defun random-step
  ((min max max-count acc) (when (>= (length acc) max-count))
