@@ -141,7 +141,23 @@
  ((_ _ prev)
   (+ prev (direction))))
 
-(defun invert
+(defun steps->melody (scale)
+  (list-comp ((<- x scale))
+    (- (lists:nth (+ x 12) scale) 12)))
+
+(defun invert-steps
+  (((= `#m(scale ,s base-scale-length ,bsl) model) steps)
+   (let* (
+          (inv-offsets (list-comp ((<- x rel-inv-offsets)) (+ (car melody-indices) x)))
+          (t-val (get-transpose-val (lists:min inv-offsets)))
+          (trans-offsets (transpose inv-offsets t-val))
+          (scale-x (extend-scale s (get-scale-val (lists:max trans-offsets))))
+          (unadj-inverted-melody (list-comp ((<- x inv-offsets)) (lists:nth (+ x bsl) scale-x))))
+     (inverted-last-notes
+      model
+      (transpose unadj-inverted-melody (* -1 t-val))))))
+
+(defun invert-melody
   (((= `#m(scale ,s base-scale-length ,bsl) model) melody)
    (let* ((melody-indices (index-melody model melody))
           (rel-inv-offsets (inverse-offsets (offsets melody-indices)))
@@ -236,6 +252,17 @@
 (defun get-scale-val (max)
   (+ 1 (div max 12)))
 
+(defun index-scale (scale)
+   (maps:from_list
+    (lists:foldl
+     (match-lambda
+       ((x '())
+        `(#(,x 1)))
+       ((x (= `(#(,_ ,last) . ,_) acc))
+        (lists:append `(#(,x ,(+ 1 last))) acc)))
+     '()
+     scale)))
+
 (defun index-scale
   ((`#m(scale ,s) melody)
    (maps:from_list
@@ -273,4 +300,4 @@
        (x (when (> x 3))
         (lists:append head (list 7 8)))
        (x
-        (lists:append head (list 1 0))))))
+        (lists:append head (list 1 0)))))))
