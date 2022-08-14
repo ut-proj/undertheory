@@ -567,3 +567,157 @@ ext-scale
 
 ;; -----------------------------------------------------------------------
 
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((steps (random-step model '(0)))
+          (adj (last-steps steps))
+          (adj-reversed (last-steps (lists:reverse adj)))
+          (shifted (list-comp ((<- x adj)) (+ 1 x)))
+          (shifted-reversed (list-comp ((<- x adj-reversed)) (+ 1 x)))
+          (scale-mult (+ 4 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (indexed (maps:from_list (lists:enumerate scale)))
+          (pitches (list-comp ((<- x shifted)) (mref indexed (+ 12 x))))
+          (pitches-reversed (list-comp ((<- x shifted-reversed)) (mref indexed (+ 12 x)))))
+      `#m(steps ,adj
+          steps-reversed ,adj-reversed
+          shifted ,shifted
+          shifted-reversed ,shifted-reversed
+          scale ,scale
+          indexed ,indexed
+          pitches ,pitches
+          pitches-reversed ,pitches-reversed))))
+
+(defun random-step
+ (((= `#m(min-interval ,min max-interval ,max base-count ,bc) model) acc) (when (>= (length acc) bc))
+   (lists:reverse acc))
+ (((= `#m(min-interval ,min max-interval ,max base-count ,bc) model) (= `(,prev . ,_) acc))
+   (random-step model
+                (lists:append (list (* (next model prev) (direction model) )) acc))))
+
+(defun next
+ ((`#m(min-interval ,min) prev) (when (=< prev min))
+  (+ prev 1))
+ ((`#m(max-interval ,max) prev) (when (>= prev max))
+  (- prev 1))
+ ((model prev)
+  (case (rand:uniform_real)
+     (x (when (=< (mref model 'threshold-for-2nd) x)) (+ 1 prev))
+     (x (when (=< (mref model 'threshold-for-3rd) x)) (+ 2 prev))
+     (x (when (=< (mref model 'threshold-for-4th) x)) (+ 3 prev))
+     (x (when (=< (mref model 'threshold-for-5th) x)) (+ 4 prev))
+     (x (when (=< (mref model 'threshold-for-6th) x)) (+ 5 prev))
+     (x (when (=< (mref model 'threshold-for-7th) x)) (+ 6 prev))
+     (_ (+ 7 prev)))))
+
+(defun direction
+  ((`#m(chance-for-direction-change ,change-chance))
+  (if (>= (rand:uniform_real) change-chance)
+    1
+    -1)))
+
+(let* ((`#m(octave ,octave vel ,vel dur ,dur) opts)
+       (results (random-walk model))
+       (melody (mref results 'pitches))
+       (melody-reversed (mref results 'pitches-reversed)))
+  (lfe_io:format
+    "\nGenerated & reversed melodies: \n  ~p\n  ~p\n"
+    (list melody melody-reversed))
+  (list-comp
+    ((<- `#(,pitch ,ipitch) (lists:zip melody melody-reversed)))
+    (let ((note (+ (* octave 12) pitch))
+          (inote (+ (* (- octave 2) 12) ipitch)))
+      (case (== inote note)
+        ('true (um.note:play note vel dur))
+        (_ (um.chord:play (list note inote) vel dur)))))
+  'ok)
+
+;; -----------------------------------------------------------------------
+
+Nice Examples:
+
+Generated melody:
+  (20 22 24 22 24 26 27 26 27 29 31 32 31 32 32 34)
+Reversed melody:
+  (34 32 32 31 32 31 29 27 26 27 26 24 22 24 22 20)
+
+Generated melody:
+  (20 19 20 22 24 26 24 22 24 22 24 26 27 29 32 34)
+Reversed melody:
+  (34 32 29 27 26 24 22 24 22 24 26 24 22 20 22 20)
+;; -----------------------------------------------------------------------
+
+(set opts `#m(
+  octave 3
+  vel 50
+  dur 500))
+
+(defun random-walk
+  (((= `#m(scale ,s min-interval ,min max-interval ,max base-count ,bc invert-chance ,ic) model))
+   (let* ((steps (random-step model '(0)))
+          (adj (last-steps (shift-up steps)))
+          (adj-reversed (last-steps (lists:reverse adj)))
+          (scale-mult (+ 12 (ceil (/ max 12))))
+          (scale (extend-scale s scale-mult))
+          (indexed-plist (lists:enumerate scale))
+          (indexed (maps:from_list indexed-plist))
+          (pitches (list-comp ((<- x adj)) (mref indexed x)))
+          (pitches-reversed (list-comp ((<- x adj-reversed)) (mref indexed x))))
+      `#m(steps ,steps
+          adj ,adj
+          adj-reversed ,adj-reversed
+          scale ,scale
+          indexed-plist ,indexed-plist
+          pitches ,pitches
+          pitches-reversed ,pitches-reversed))))
+
+(random-walk model)
+
+(defun random-step
+ (((= `#m(min-interval ,min max-interval ,max base-count ,bc) model) acc) (when (>= (length acc) bc))
+   (lists:reverse acc))
+ (((= `#m(min-interval ,min max-interval ,max base-count ,bc) model) (= `(,prev . ,_) acc))
+   (random-step model
+                (lists:append (list (next model prev)) acc))))
+
+(defun next
+ ((`#m(min-interval ,min) prev) (when (=< prev min))
+  (+ prev 1))
+ ((`#m(max-interval ,max) prev) (when (>= prev max))
+  (- prev 1))
+ ((model prev)
+  (let ((dir (direction model)))
+   (case (rand:uniform_real)
+      (x (when (=< (mref model 'threshold-for-2nd) x)) (+ (* 1 dir) prev))
+      (x (when (=< (mref model 'threshold-for-3rd) x)) (+ (* 2 dir) prev))
+      (x (when (=< (mref model 'threshold-for-4th) x)) (+ (* 3 dir) prev))
+      (x (when (=< (mref model 'threshold-for-5th) x)) (+ (* 4 dir) prev))
+      (x (when (=< (mref model 'threshold-for-6th) x)) (+ (* 5 dir) prev))
+      (x (when (=< (mref model 'threshold-for-7th) x)) (+ (* 6 dir) prev))
+      (_ (+ (* 7 dir) prev))))))
+
+(let* ((`#m(octave ,octave vel ,vel dur ,dur) opts)
+       (results (random-walk model))
+       (melody (mref results 'pitches))
+       (melody-reversed (mref results 'pitches-reversed)))
+  (lfe_io:format
+    "\nGenerated & reversed melodies: \n  ~p\n  ~p\n"
+    (list melody melody-reversed))
+  (list-comp
+    ((<- `#(,pitch ,ipitch) (lists:zip melody melody-reversed)))
+    (let ((note (+ (* octave 12) pitch))
+          (inote (+ (* (- octave 2) 12) ipitch)))
+      (case (== inote note)
+        ('true (um.note:play note vel dur))
+        (_ (um.chord:play (list note inote) vel dur)))))
+  'ok)
+
+(let* ((`#m(octave ,octave vel ,vel dur ,dur) opts)
+       (results (random-walk model))
+       (melody (mref results 'pitches)))
+  (lfe_io:format "\nGenerated melody: \n  ~p\n" (list melody))
+  (lfe_io:format "Generated melody length: \n  ~p\n\n" (list (length melody)))
+  (list-comp
+    ((<- pitch melody))
+    (um.note:play (+ (* octave 12) pitch) vel dur))
+  'ok)
