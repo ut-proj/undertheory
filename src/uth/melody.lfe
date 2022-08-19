@@ -35,14 +35,14 @@
      max-interval 10
      time-signature #(4 4)
      bars 2
-     chance-for-2nd 0.5
-     chance-for-3rd 0.2
-     chance-for-4th 0.1
-     chance-for-5th 0.1
-     chance-for-6th 0.025
-     chance-for-7th 0.025
-     chance-for-8th 0.05
-     chance-for-direction-change 0.25))
+     threshold-for-2nd 0.65
+     threshold-for-3rd 0.44
+     threshold-for-4th 0.23
+     threshold-for-5th 0.12
+     threshold-for-6th 0.0
+     threshold-for-7th 0.0
+     threshold-for-8th 0.0
+     threshold-for-direction-change 0.25))
 
 (defun new-model (scale-name)
   (new-model scale-name (default-model)))
@@ -219,10 +219,11 @@
 (defun scale-mult (max)
   (+ 2 (ceil (/ max 12))))
 
-(defun direction ()
-  (case (rand:uniform 2)
-    (1 1)
-    (2 -1)))
+(defun direction
+  ((`#m(chance-for-direction-change ,change-chance))
+  (if (>= (rand:uniform_real) change-chance)
+    1
+    -1)))
 
 (defun offsets
   "This generates a list of offsets, relative to the first note of a melody."
@@ -311,3 +312,18 @@
         (lists:append head (list 7 8)))
        (x
         (lists:append head (list 1 0)))))))
+
+(defun floor-ceil
+  ((x) (when (>= x 0))
+   (ceil x))
+  ((x)
+   (floor x)))
+
+(defun shift-up (steps)
+  (case (floor (/ (lists:min steps) 12))
+   (x (when (>= x 1))
+     steps)
+   (x (when (== x 0))
+     (list-comp ((<- s steps)) (+ 1 s)))
+   (x
+     (list-comp ((<- s steps)) (+ (* (abs x) 12) s)))))
