@@ -58,6 +58,7 @@
      d-diminished  (  1    2  3   4 |#4| |#5|  6  |#7|)
      eb-diminished ( b1    2 b3  b4   4    5   6    7)
      ;; Persian
+     persian (1 b2 3 4 b5 b6 7 8)
      ;; Messiaen
      ;; Other
      ))
