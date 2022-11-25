@@ -221,10 +221,10 @@
   (+ 2 (ceil (/ max 12))))
 
 (defun direction ()
-  (direction 0.5))
+  (direction (default-model)))
 
 (defun direction
-  ((`#m(chance-for-direction-change ,change-chance))
+  ((`#m(threshold-for-direction-change ,change-chance))
    (if (>= (rand:uniform_real) change-chance)
     1
     -1)))
