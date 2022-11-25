@@ -50,7 +50,7 @@
 (defun new-model
   ((scale-name (= `#m(max-interval ,i) model))
    (let* ((scale (uth.sequence:make scale-name `#m(type max interval ,i)))
-          (`#m(first ,first-notes index ,starting) (first-notes scale model)))
+          (`#m(first ,first-notes index ,starting) (first-notes model)))
      (clj:-> model
              (mset 'base-scale-length (length (mref (uth.scale:all) scale-name)))
              (mset 'scale scale)
@@ -155,17 +155,17 @@
   (list-comp ((<- x scale))
     (- (lists:nth (+ x 12) scale) 12)))
 
-(defun invert-steps
-  (((= `#m(scale ,s base-scale-length ,bsl) model) steps)
-   (let* (
-          (inv-offsets (list-comp ((<- x rel-inv-offsets)) (+ (car melody-indices) x)))
-          (t-val (get-transpose-val (lists:min inv-offsets)))
-          (trans-offsets (transpose inv-offsets t-val))
-          (scale-x (extend-scale s (get-scale-val (lists:max trans-offsets))))
-          (unadj-inverted-melody (list-comp ((<- x inv-offsets)) (lists:nth (+ x bsl) scale-x))))
-     (inverted-last-notes
-      model
-      (transpose unadj-inverted-melody (* -1 t-val))))))
+; (defun invert-steps
+;   (((= `#m(scale ,s base-scale-length ,bsl) model) steps)
+;    (let* (
+;           (inv-offsets (list-comp ((<- x rel-inv-offsets)) (+ (car melody-indices) x)))
+;           (t-val (get-transpose-val (lists:min inv-offsets)))
+;           (trans-offsets (transpose inv-offsets t-val))
+;           (scale-x (extend-scale s (get-scale-val (lists:max trans-offsets))))
+;           (unadj-inverted-melody (list-comp ((<- x inv-offsets)) (lists:nth (+ x bsl) scale-x))))
+;      (inverted-last-notes
+;       model
+;       (transpose unadj-inverted-melody (* -1 t-val))))))
 
 (defun invert-melody
   (((= `#m(scale ,s base-scale-length ,bsl) model) melody)
@@ -194,7 +194,8 @@
 
 (defun generate-note-count (scale model)
   (- (base-note-count model)
-     (length (mref (first-notes scale model) 'first))
+    ;  (length (mref (first-notes scale model) 'first))
+    (length (mref (first-notes model) 'first))
      2))
 
 (defun first-notes ()
@@ -219,9 +220,12 @@
 (defun scale-mult (max)
   (+ 2 (ceil (/ max 12))))
 
+(defun direction ()
+  (direction 0.5))
+
 (defun direction
   ((`#m(chance-for-direction-change ,change-chance))
-  (if (>= (rand:uniform_real) change-chance)
+   (if (>= (rand:uniform_real) change-chance)
     1
     -1)))
 
@@ -311,7 +315,7 @@
        (x (when (> x 3))
         (lists:append head (list 7 8)))
        (x
-        (lists:append head (list 1 0)))))))
+        (lists:append head (list 1 0))))))
 
 (defun floor-ceil
   ((x) (when (>= x 0))
