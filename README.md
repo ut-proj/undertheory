@@ -40,5 +40,5 @@ TBD
 [gh-actions]: https://github.com/ut-proj/undertheory/actions
 [lfe]: https://github.com/lfe/lfe
 [lfe badge]: https://img.shields.io/badge/lfe-2.1-blue.svg
-[erlang badge]: https://img.shields.io/badge/erlang-%25to%2026-blue.svg
+[erlang badge]: https://img.shields.io/badge/erlang-25+-blue.svg
 [versions]: https://github.com/ut-proj/undertheory/blob/master/.github/workflows/cicd.yml
