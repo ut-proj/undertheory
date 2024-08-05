@@ -34,3 +34,16 @@
                (/ bpm 60)
                beat
                (/ (mref (timings) k) beat)))))))
+
+(defun names ()
+  '(C C# Db D D# Eb E F F# Gb G G# Ab A A# Bb B))
+
+(defun numbers ()
+  "Useful for working with intervals; not related to MIDI in any way."
+  (list 0 1 1 2 3 3 4 5 6 6 7 8 8 9 10 10 11))
+
+(defun name (number)
+  (mref (maps:from_list (lists:zip (numbers) (names))) number))
+
+(defun number (name)
+  (mref (maps:from_list (lists:zip (names) (numbers))) name))
