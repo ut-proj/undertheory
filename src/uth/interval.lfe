@@ -19,17 +19,26 @@
 (defun name->num (name)
   (mref (maps:from_list (lists:zip (names) (numbers))) name))
 
-(defun name (note1 note2)
-  (name note1 note2 1))
-
 (defun norm (note-num1 note-num2)
   (cond
    ((< note-num1 note-num2) (list note-num1 note-num2))
    ('true (norm note-num1 (+ note-num2 12)))))
 
+(defun name (note1 note2)
+  (name note1 note2 1))
+
 (defun name
+  ((_ _ os) (when (orelse (< os 1) (> os 2)))
+   #(error "octave number must be either 1 or 2"))
   ((note1 note2 octaves) (when (andalso (is_atom note1) (is_atom note2)))
-   (name (uth.note:number note1) (uth.note:number note2) octaves))
+   (let ((n1 (uth.note:number note1 'with-error))
+         (n2 (uth.note:number note2 'with-error)))
+     (case (list n1 n2)
+       (`(#(error ,_) ,_) n1)
+       (`(,_ #(error ,_)) n2)
+       (`(,_ ,_) (name n1 n2 octaves)))))
+  ((n1 n2 _) (when (orelse (< n1 0) (> n1 24) (< n2 0) (> n2 24)))
+   #(error "numeric note values must be integers between 0 and 24, inclusive"))
   ((num1 num2 octaves)
    (let* ((`(,n1 ,n2) (norm num1 num2))
           (raw (- n2 n1))

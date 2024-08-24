@@ -47,3 +47,9 @@
 
 (defun number (name)
   (mref (maps:from_list (lists:zip (names) (numbers))) name))
+
+(defun number
+  ((name 'with-error)
+   (if (lists:member name (names))
+     (number name)
+     #(error "Supplied name must be a legal note name atom; see (uth.note:names) for allowed values."))))
