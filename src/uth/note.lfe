@@ -36,20 +36,68 @@
                (/ (mref (timings) k) beat)))))))
 
 (defun names ()
-  '(C C# Db D D# Eb E F F# Gb G G# Ab A A# Bb B))
+  "This includes enharmonics."
+  `(C C# Db D D# Eb E F F# Gb G G# Ab A A# Bb B
+      ,@(enharmonic-sharps)
+      ,@(enharmonic-flats)
+      ,@(double-flats)
+      ,@(double-sharps)))
+
+(defun sharps () '(C# D# F# G# A#))
+(defun enharmonic-sharps () '(B# E#))
+(defun double-sharps () '(C## D## E## F## G## A## B##))
+(defun flats () '(Db Eb Gb Ab Bb))
+(defun enharmonic-flats () '(Fb Cb))
+(defun double-flats () '(Cbb Dbb Ebb Fbb Gbb Abb Bbb))
+
+(defun !flats () (++ (sharps)
+                     (enharmonic-sharps)
+                     (double-sharps)
+                     (enharmonic-flats)
+                     (double-flats)))
+
+(defun !sharps () (++ (enharmonic-sharps)
+                      (double-sharps)
+                      (flats)
+                      (enharmonic-flats)
+                      (double-flats)))
 
 (defun numbers ()
   "Useful for working with intervals; not related to MIDI in any way."
-  (list 0 1 1 2 3 3 4 5 6 6 7 8 8 9 10 10 11))
+  (list 0 1 1 2 3 3 4 5 6 6 7 8 8 9 10 10 11
+        0 5 ; enharmonic sharps
+        4 11 ; enharmonic flats
+        10 0 2 3 5 7 9 ; double-flats
+        2 4 6 7 9 11 1   ; double-sharps
+        ))
+
+(defun name->number () (lists:zip (names) (numbers)))
+(defun number->name () (lists:zip (numbers) (names)))
+
+(defun name-all (number) (proplists:get_all_values number (number->name)))
+
+(defun name
+  ((number '#(all))
+   (name-all number))
+  ((number '#(flat))
+   (car
+    (lists:filter
+     (lambda (x) (not (lists:member x (!flats))))
+     (name-all number))))
+  ((number '#(sharp))
+   (car
+    (lists:filter
+     (lambda (x) (not (lists:member x (!sharps))))
+     (name-all number)))))
 
 (defun name (number)
-  (mref (maps:from_list (lists:zip (numbers) (names))) number))
+  (car (name number #(all))))
 
 (defun number (name)
-  (mref (maps:from_list (lists:zip (names) (numbers))) name))
+  (proplists:get_value name (name->number)))
 
 (defun number
   ((name 'with-error)
    (if (lists:member name (names))
      (number name)
-     #(error "Supplied name must be a legal note name atom; see (uth.note:names) for allowed values."))))
+     (uth.errors:note-name))))
