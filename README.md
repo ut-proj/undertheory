@@ -1,6 +1,6 @@
 # undertheory
 
-*Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc.*
+*Music-theoretic LFE modules: notes, intervales, keys, scales, modes, melody-generation, etc.*
 
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
