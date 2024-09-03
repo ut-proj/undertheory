@@ -45,3 +45,9 @@
   (is-equal '(12 24) (uth.interval:norm 12 0))
   (is-equal '(24 24) (uth.interval:norm 24 0)) ; don't like this ...
   (is-equal '(17 24) (uth.interval:norm 17 0)))
+
+(deftest above
+  (is-equal 'Eb (uth.interval:above 'C 'm3 #(flat)))
+  (is-equal 'C# (uth.interval:above 'F# 'P5 #(sharp)))
+  (is-equal 'B (uth.interval:above 'G 'M10 #(sharp)))
+  )

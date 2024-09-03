@@ -35,6 +35,12 @@
                beat
                (/ (mref (timings) k) beat)))))))
 
+(defun 1oct () 12)
+(defun 2oct () 24)
+
+(defun mod-1oct (note) (rem note (1oct)))
+(defun mod-2oct (note) (rem note (2oct)))
+
 (defun names ()
   "This includes enharmonics."
   `(C C# Db D D# Eb E F F# Gb G G# Ab A A# Bb B
