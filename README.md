@@ -1,6 +1,6 @@
 # undertheory
 
-*Music-theoretic LFE modules: notes, intervales, keys, scales, modes, melody-generation, etc.*
+*Music-theoretic LFE modules: notes, intervals, keys, scales, modes, melody-generation, etc.*
 
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
@@ -28,9 +28,33 @@ Start up the LFE REPL:
 rebar3 lfe repl
 ```
 
-## API
+## Examples
 
-TBD
+Notes:
+
+``` lisp
+lfe> (uth.note:name 0)
+C
+lfe> (uth.note:name 0 #(all))
+(C B# Dbb)
+lfe> (uth.note:number 'Gb)
+6
+```
+
+Intervals:
+
+``` lisp
+lfe> (uth.interval:name 'C 'Eb)
+m3
+lfe> (uth.interval:name 'C 'G)
+P5
+lfe> (uth.interval:name 'C 'Bb)
+m7
+lfe> (uth.interval:above 'C 'm3))
+(D# Eb Fbb)
+lfe> (uth.interval:above 'C 'm3 #(flat))
+Eb
+```
 
 [//]: ---Named-Links---
 
