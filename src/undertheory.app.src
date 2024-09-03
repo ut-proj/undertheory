@@ -1,5 +1,5 @@
 {application, undertheory,
- [{description, "Music-theoretic LFE modules: keys, scales, modes, melody-generation, etc."},
+ [{description, "Music-theoretic LFE modules: notes, intervals, keys, scales, modes, melody-generation, etc."},
   {vsn, "0.2.0"},
   {registered, []},
   {applications,
