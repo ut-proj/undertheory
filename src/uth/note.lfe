@@ -68,6 +68,14 @@
                       (enharmonic-flats)
                       (double-flats)))
 
+(defun flat? (note) (not (lists:member note (!flats))))
+(defun sharp? (note) (not (lists:member note (!sharps))))
+(defun accidental (note)
+  (cond
+   ((flat? note) 'flat)
+   ((sharp? note) 'sharp)
+   ('true 'natural)))
+
 (defun numbers ()
   "Useful for working with intervals; not related to MIDI in any way."
   (list 0 1 1 2 3 3 4 5 6 6 7 8 8 9 10 10 11
@@ -83,21 +91,23 @@
 (defun name-all (number) (proplists:get_all_values number (number->name)))
 
 (defun name
-  ((number '#(all))
-   (name-all number))
   ((number '#(flat))
    (car
     (lists:filter
-     (lambda (x) (not (lists:member x (!flats))))
+     #'flat?/1
      (name-all number))))
   ((number '#(sharp))
    (car
     (lists:filter
-     (lambda (x) (not (lists:member x (!sharps))))
-     (name-all number)))))
+     #'sharp?/1
+     (name-all number))))
+  ((number '#(all))
+   (name-all number))
+  ((number _)
+   (car (name-all number))))
 
 (defun name (number)
-  (car (name number #(all))))
+  (name number #(one)))
 
 (defun number (name)
   (proplists:get_value name (name->number)))

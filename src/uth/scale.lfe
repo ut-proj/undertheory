@@ -1,6 +1,37 @@
 (defmodule uth.scale
   (export all))
 
+(defun names ()
+  '(1 b2 2 |#2| b3 3 |#3| b4 4 |#4| b5 5 |#5| b6 6 |#6| b7 7 |#7|
+    8 b9 9 |#9| b10 10 |#10| b11 11 |#11| b12 12 |#12| b13 13 |#13|
+    b14 14 |#14| b15 15))
+
+(defun intervals ()
+  '(P0 m2 M2 m3 m3 M3 P4 M3 P4 a4 dim5 P5 m6 m6 M6 m7 m7 M7 P8
+       P8 m9 M9 m10 m10 M10 P11 M10 P11 a11 dim12 P12 m13 m13 M13 m14
+       m14 M14 P15 M14 P15))
+
+(defun accidental
+  ((name) (when (is_number name))
+   'natural)
+  ((name)
+   (case (car (atom_to_list name))
+     (#\b 'flat)
+     (#\# 'sharp)
+     (_ 'natural))))
+
+(defun numbers ()
+  (list-comp ((<- x (intervals)))
+    (uth.interval:name x)))
+
+(defun name->interval () (lists:zip (names) (intervals)))
+(defun name->number () (lists:zip (names) (numbers)))
+(defun number->name () (lists:zip (numbers) (names)))
+
+(defun lookup-names (number) (proplists:get_all_values number (number->name)))
+(defun lookup-interval (name) (proplists:lookup name (name->interval)))
+(defun lookup-number (name) (proplists:get_value name (name->number)))
+
 (defun all ()
   #m(
      chromatic (1 b2 2 b3 3 4 b5 5 b6 6 b7 7)
@@ -309,3 +340,22 @@
 ;;; Messiaen
 
 ;;; Other
+
+;;; Utility functions
+
+(defun as-intervals (scale)
+  (list-comp ((<- x scale))
+    (element 2 (lookup-interval x))))
+
+(defun as-notes (root scale)
+  (as-notes root scale `#(,(uth.note:accidental root))))
+
+(defun as-notes (root scale opt)
+  "This gives the notes of the given scale, starting with the given root.
+
+  As such, this means that passing G and aeolian means 'Give me an Aeolian
+  scale starting on G' (G minor), not 'Give me an Aeolian scale in the key of G. (For the
+  latter, you would pass E and aeolian as parameters.)'
+  "
+  (list-comp ((<- x scale))
+    (uth.interval:above root (element 2 (lookup-interval x)) opt)))

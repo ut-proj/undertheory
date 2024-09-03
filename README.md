@@ -56,6 +56,21 @@ lfe> (uth.interval:above 'C 'm3 #(flat))
 Eb
 ```
 
+Scales:
+
+``` lisp
+lfe> (uth.scale:locrian)
+(1 b2 b3 4 b5 b6 b7)
+lfe> (uth.scale:as-intervals (uth.scale:locrian))
+(P0 m2 m3 P4 dim5 m6 m7)
+lfe> (uth.scale:as-notes 'C (uth.scale:lydian))
+(C D E F# G A B)
+lfe> (uth.scale:as-notes 'C (uth.scale:aeolian) '#(flat))
+(C D Eb F G Ab Bb)
+lfe> (uth.scale:as-notes 'Eb (uth.scale:ionian) '#(flat))
+(Eb F G Ab Bb C D)
+```
+
 [//]: ---Named-Links---
 
 [logo]: priv/images/project-logo.png
