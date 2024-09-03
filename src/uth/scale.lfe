@@ -22,7 +22,7 @@
 
 (defun numbers ()
   (list-comp ((<- x (intervals)))
-    (uth.interval:name x)))
+    (uth.interval:lookup-number x)))
 
 (defun name->interval () (lists:zip (names) (intervals)))
 (defun name->number () (lists:zip (names) (numbers)))
