@@ -350,12 +350,14 @@
 (defun as-notes (root scale)
   (as-notes root scale `#(,(uth.note:accidental root))))
 
-(defun as-notes (root scale opt)
+(defun as-notes
   "This gives the notes of the given scale, starting with the given root.
 
   As such, this means that passing G and aeolian means 'Give me an Aeolian
   scale starting on G' (G minor), not 'Give me an Aeolian scale in the key of G. (For the
-  latter, you would pass E and aeolian as parameters.)'
-  "
-  (list-comp ((<- x scale))
-    (uth.interval:above root (element 2 (lookup-interval x)) opt)))
+  latter, you would pass E and aeolian as parameters.)'"
+  ((root scale opt) (when (is_atom scale))
+   (as-notes root (mref (all) scale) opt))
+  ((root scale opt)
+   (list-comp ((<- x scale))
+     (uth.interval:above root (element 2 (lookup-interval x)) opt))))

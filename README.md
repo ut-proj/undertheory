@@ -61,13 +61,13 @@ Scales:
 ``` lisp
 lfe> (uth.scale:locrian)
 (1 b2 b3 4 b5 b6 b7)
-lfe> (uth.scale:as-intervals (uth.scale:locrian))
+lfe> (uth.scale:as-intervals 'locrian)
 (P0 m2 m3 P4 dim5 m6 m7)
-lfe> (uth.scale:as-notes 'C (uth.scale:lydian))
+lfe> (uth.scale:as-notes 'C 'lydian)
 (C D E F# G A B)
-lfe> (uth.scale:as-notes 'C (uth.scale:aeolian) '#(flat))
+lfe> (uth.scale:as-notes 'C 'aeolian '#(flat))
 (C D Eb F G Ab Bb)
-lfe> (uth.scale:as-notes 'Eb (uth.scale:ionian) '#(flat))
+lfe> (uth.scale:as-notes 'Eb 'ionian)
 (Eb F G Ab Bb C D)
 ```
 

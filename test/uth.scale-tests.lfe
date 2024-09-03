@@ -37,3 +37,20 @@
             (uth.scale:as-notes 'F# (uth.scale:aeolian)))
   (is-equal '(Gb G A B C D E)
             (uth.scale:as-notes 'Gb (uth.scale:locrian))))
+
+(deftest as-notes-scales-as-atoms
+  (is-equal '(C D E |F#| G A B)
+            (uth.scale:as-notes 'C 'lydian #(sharp)))
+  (is-equal '(C D Eb F G Ab Bb)
+            (uth.scale:as-notes 'C 'aeolian #(flat)))
+  (is-equal '(C Db Eb F Gb Ab Bb)
+            (uth.scale:as-notes 'C 'locrian #(flat)))
+
+  (is-equal '(Bb C D Eb F G A)
+            (uth.scale:as-notes 'Bb 'ionian))
+  (is-equal '(Bb C D E F G A)
+            (uth.scale:as-notes 'Bb 'lydian))
+  (is-equal '(|F#| |G#| A B |C#| D E)
+            (uth.scale:as-notes 'F# 'aeolian))
+  (is-equal '(Gb G A B C D E)
+            (uth.scale:as-notes 'Gb 'locrian)))
