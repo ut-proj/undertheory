@@ -107,7 +107,7 @@
    (car (name-all number))))
 
 (defun name (number)
-  (name number #(one)))
+  (car (name-all number)))
 
 (defun number (name)
   (proplists:get_value name (name->number)))

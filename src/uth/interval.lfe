@@ -72,3 +72,41 @@
   (let ((note (uth.note:number high-note-name))
         (intv (lookup-number intv-name)))
     (uth.note:name (uth.note:mod-1oct (- (+ note (uth.note:1oct)) intv)) opts)))
+
+;; TODO: we might want to move this into the sequence module ... and rename it, of course
+(defun sequence
+  ((`(,previous . ()))
+    #(error "list of notes too short"))
+  ((`(,previous . ,notes))
+   (sequence previous notes '())))
+
+(defun sequence
+  ((previous '() acc)
+   (lists:reverse acc))
+  ((previous `(,head . ,tail) acc)
+   (sequence head tail (cons (- (uth.note:number head) (uth.note:number previous)) acc))))
+
+(defun retrograde (seq)
+  (lists:reverse seq))
+
+(defun inversion (seq)
+  (list-comp ((<- x seq)) (* -1 x)))
+
+(defun sequence->notes (root-note seq)
+  (sequence->notes root-note seq #(one)))
+
+(defun sequence->notes (root-note seq opts)
+  (sequence->notes root-note seq '() opts))
+
+(defun sequence->notes
+  ((note-name '() acc _)
+   (lists:reverse (cons note-name acc)))
+  ((note-name `(,head . ,tail) acc opts)
+   (sequence->notes
+    (uth.note:name (uth.note:mod-1oct (+ (uth.note:1oct)
+                                         (uth.note:number note-name)
+                                         head)) opts)
+    tail
+    (cons note-name acc)
+    opts)))
+  
