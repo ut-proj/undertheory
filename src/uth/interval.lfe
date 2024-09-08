@@ -66,4 +66,9 @@
     (uth.note:name (uth.note:mod-1oct (+ note intv)) opts)))
 
 (defun below (high-note-name intv-name)
-  )
+  (below high-note-name intv-name #(all)))
+
+(defun below (high-note-name intv-name opts)
+  (let ((note (uth.note:number high-note-name))
+        (intv (lookup-number intv-name)))
+    (uth.note:name (uth.note:mod-1oct (- (+ note (uth.note:1oct)) intv)) opts)))

@@ -49,5 +49,17 @@
 (deftest above
   (is-equal 'Eb (uth.interval:above 'C 'm3 #(flat)))
   (is-equal 'C# (uth.interval:above 'F# 'P5 #(sharp)))
-  (is-equal 'B (uth.interval:above 'G 'M10 #(sharp)))
-  )
+  (is-equal 'B (uth.interval:above 'G 'M10 #(sharp))))
+
+(deftest below
+  (is-equal 'B (uth.interval:below 'C 'm2 #(first)))
+  (is-equal 'Bb (uth.interval:below 'C 'M2 #(flat)))
+  (is-equal 'A (uth.interval:below 'C 'm3 #(first)))
+  (is-equal 'Ab (uth.interval:below 'C 'M3 #(flat)))
+  (is-equal 'G (uth.interval:below 'C 'P4 #(flat)))
+  (is-equal 'F (uth.interval:below 'C 'P5 #(first)))
+  (is-equal 'E (uth.interval:below 'C 'm6 #(first)))
+  (is-equal 'Eb (uth.interval:below 'C 'M6 #(flat)))
+  (is-equal 'D (uth.interval:below 'C 'm7 #(first)))
+  (is-equal 'C# (uth.interval:below 'C 'M7 #(sharp)))
+  (is-equal 'C (uth.interval:below 'C 'P8 #(first))))
