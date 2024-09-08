@@ -117,3 +117,28 @@
    (if (lists:member name (names))
      (number name)
      (uth.errors:note-name))))
+
+(defun ->intervals
+  ((`(,previous . ()))
+   #(error "list of notes too short"))
+  ((`(,previous . ,notes))
+   (->intervals previous notes '())))
+
+(defun ->intervals
+  ((previous '() acc)
+   (lists:reverse acc))
+  ((previous `(,head . ,tail) acc)
+   (->intervals head tail (cons (- (number head) (number previous)) acc))))
+
+(defun retrograde ()
+  'not-implemented)
+
+(defun invert (root-note notes)
+  (invert root-note notes #(one)))
+
+(defun invert (root-note notes opts)
+  ;; TODO: check for error(s):
+  (let ((ivals (->intervals notes)))
+    (uth.interval:->notes root-note
+                          (uth.interval:invert ivals)
+                          opts)))

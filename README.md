@@ -71,6 +71,13 @@ lfe> (uth.scale:as-notes 'Eb 'ionian)
 (Eb F G Ab Bb C D)
 ```
 
+Inversions:
+
+``` lisp
+lfe> (uth.notes:invert 'Bb '(D Eb F D F G Bb A G Bb D) #(flat))
+(Bb A G Bb G F D Eb F D Bb)
+```
+
 [//]: ---Named-Links---
 
 [logo]: priv/images/project-logo.png

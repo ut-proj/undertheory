@@ -73,39 +73,29 @@
         (intv (lookup-number intv-name)))
     (uth.note:name (uth.note:mod-1oct (- (+ note (uth.note:1oct)) intv)) opts)))
 
-;; TODO: we might want to move this into the sequence module ... and rename it, of course
-(defun sequence
-  ((`(,previous . ()))
-    #(error "list of notes too short"))
-  ((`(,previous . ,notes))
-   (sequence previous notes '())))
-
-(defun sequence
-  ((previous '() acc)
-   (lists:reverse acc))
-  ((previous `(,head . ,tail) acc)
-   (sequence head tail (cons (- (uth.note:number head) (uth.note:number previous)) acc))))
-
 (defun retrograde (seq)
   (lists:reverse seq))
 
-(defun inversion (seq)
+(defun invert (seq)
   (list-comp ((<- x seq)) (* -1 x)))
 
-(defun sequence->notes (root-note seq)
-  (sequence->notes root-note seq #(one)))
+;; XXX Change these to use root-interval ... or some other way of being
+;; internally consistent
+(defun ->notes (root-note intervals)
+  (->notes root-note intervals #(one)))
 
-(defun sequence->notes (root-note seq opts)
-  (sequence->notes root-note seq '() opts))
+(defun ->notes (root-note intervals opts)
+  (->notes root-note intervals '() opts))
 
-(defun sequence->notes
+(defun ->notes
   ((note-name '() acc _)
    (lists:reverse (cons note-name acc)))
   ((note-name `(,head . ,tail) acc opts)
-   (sequence->notes
+   (->notes
     (uth.note:name (uth.note:mod-1oct (+ (uth.note:1oct)
                                          (uth.note:number note-name)
-                                         head)) opts)
+                                         head))
+                   opts)
     tail
     (cons note-name acc)
     opts)))
