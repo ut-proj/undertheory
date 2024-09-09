@@ -133,6 +133,18 @@
 (defun retrograde ()
   'not-implemented)
 
+(defun transpose (new-root notes)
+  (transpose new-root notes #(one)))
+
+(defun transpose (new-root notes opts)
+  (let ((ivals (->intervals notes)))
+    (uth.interval:->notes new-root
+                          ivals
+                          opts)))
+
+(defun invert (notes)
+  (invert (car notes) notes #(one)))
+
 (defun invert (root-note notes)
   (invert root-note notes #(one)))
 
