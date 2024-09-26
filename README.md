@@ -5,6 +5,7 @@
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
 [![Erlang Versions][erlang badge]][versions]
+[![Tag][github-tag-badge]][github-tag]
 
 [![][logo]][logo-large]
 
@@ -88,3 +89,5 @@ lfe> (uth.notes:invert 'Bb '(D Eb F D F G Bb A G Bb D) #(flat))
 [lfe badge]: https://img.shields.io/badge/lfe-2.1-blue.svg
 [erlang badge]: https://img.shields.io/badge/erlang-25+-blue.svg
 [versions]: https://github.com/ut-proj/undertheory/blob/master/.github/workflows/cicd.yml
+[github-tag]: https://github.com/ut-proj/undertheory/tags
+[github-tag-badge]: https://img.shields.io/github/tag/ut-proj/undertheory.svg
