@@ -10,3 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = { version = "0.38", features = ["nif_version_2_17"] }
+music-comp-mt = { version = "=0.6.1", features = ["midi"] }
