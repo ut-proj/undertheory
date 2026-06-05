@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/uth_mt_nif"]
+resolver = "2"

@@ -36,3 +36,7 @@ rebar3.crashdump
 auto-save-list
 tramp
 workbench
+
+# rebar3_cargo (Rust NIF build output)
+priv/crates/
+src/cargo.hrl
