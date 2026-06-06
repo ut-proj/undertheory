@@ -19,3 +19,19 @@
 (deftest parse-midi-pitch-empty
   (is-equal #(error invalid-pitch)
     (uth.mt.note:parse-midi-pitch "")))
+
+(deftest chord-notes-c-major-triad
+  (is-equal #(ok (#m(pitch C octave 4)
+                  #m(pitch E octave 4)
+                  #m(pitch G octave 4)))
+    (uth.mt.chord:notes 'C 'major 'triad)))
+
+(deftest chord-notes-c-minor-triad
+  (is-equal #(ok (#m(pitch C octave 4)
+                  #m(pitch Eb octave 4)
+                  #m(pitch G octave 4)))
+    (uth.mt.chord:notes 'C 'minor 'triad)))
+
+(deftest chord-notes-unknown-quality
+  (is-equal #(error unknown-quality)
+    (uth.mt.chord:notes 'C 'banana 'triad)))
