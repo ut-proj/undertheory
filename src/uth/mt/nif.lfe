@@ -2,7 +2,9 @@
   (on_load (init 0))
   (export (pong 0)
           (parse-midi-pitch 1)
-          (chord-notes 3)))
+          (chord-notes 3)
+          (make-base-space 0)
+          (betweenness-centrality 1)))
 
 (defun init ()
   (let ((path (filename:join
@@ -17,4 +19,10 @@
   (erlang:nif_error 'not-loaded))
 
 (defun chord-notes (_ _ _)
+  (erlang:nif_error 'not-loaded))
+
+(defun make-base-space ()
+  (erlang:nif_error 'not-loaded))
+
+(defun betweenness-centrality (_)
   (erlang:nif_error 'not-loaded))

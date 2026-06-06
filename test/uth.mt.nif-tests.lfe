@@ -35,3 +35,12 @@
 (deftest chord-notes-unknown-quality
   (is-equal #(error unknown-quality)
     (uth.mt.chord:notes 'C 'banana 'triad)))
+
+(deftest base-space-cardinality
+  (let ((space (uth.mt.oth:base-space)))
+    (is (is_reference space))))
+
+(deftest betweenness-centrality-cardinality
+  (let* ((space (uth.mt.oth:base-space))
+         (bc (uth.mt.oth:betweenness-centrality space)))
+    (is-equal 228 (length bc))))
