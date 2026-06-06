@@ -1,0 +1,70 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: build + test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '28'
+          rebar3-version: '3.27.0'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Cargo dependency sources (crates.io registry + git). The compiled
+      # cargo target lives under _build (rebar3_cargo's target_dir), so it is
+      # covered by the _build cache below, not a root `target/`.
+      - name: Cache cargo deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
+
+      # _build holds Hex deps, compiled LFE beams, and the cargo target.
+      - name: Cache _build
+        uses: actions/cache@v4
+        with:
+          path: _build
+          key: rebar3-${{ runner.os }}-${{ hashFiles('rebar.lock', 'Cargo.lock') }}
+          restore-keys: |
+            rebar3-${{ runner.os }}-
+
+      - name: Compile (builds the Rust NIF from source)
+        run: rebar3 compile
+
+      # Warm the test profile so include-lib resolves ltest-macros.lfe.
+      # (Arc 2 S0 finding: a cold `rebar3 as test lfe ltest` fails on a fresh
+      # checkout; the default-profile compile above does not warm `test`.)
+      - name: Compile test profile
+        run: rebar3 as test compile
+
+      - name: Run ltest suite (expects 45/45)
+        run: rebar3 as test lfe ltest
+
+      - name: "Smoke test: spec §9 lines via LFE REPL"
+        shell: bash
+        run: |
+          OUT=$(printf '%s\n' \
+            '(io:format "SMOKE1 ~w~n" (list (uth.mt.note:parse-midi-pitch "C4")))' \
+            '(io:format "SMOKE2 ~w~n" (list (uth.mt.chord:notes (quote C) (quote major) (quote triad))))' \
+            '(io:format "SMOKE3 ~w~n" (list (length (uth.mt.oth:betweenness-centrality (uth.mt.oth:base-space)))))' \
+            | rebar3 lfe repl)
+          echo "$OUT"
+          echo "$OUT" | grep -q 'SMOKE1 {ok,60}'                || { echo "FAIL: §9 line 1"; exit 1; }
+          echo "$OUT" | grep 'SMOKE2' | grep -q '{ok,'          || { echo "FAIL: §9 line 2 (ok tag)"; exit 1; }
+          echo "$OUT" | grep 'SMOKE2' | grep -q "'G'"           || { echo "FAIL: §9 line 2 (chord notes)"; exit 1; }
+          echo "$OUT" | grep -q 'SMOKE3 228'                    || { echo "FAIL: §9 line 3"; exit 1; }
+          echo "All three spec §9 lines verified."
