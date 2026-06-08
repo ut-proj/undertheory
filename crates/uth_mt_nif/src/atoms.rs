@@ -2,10 +2,9 @@ rustler::atoms! {
     ok,
     pong,
 
-    // Error reasons. invalid_pitch is F1's (snake; its wrapper hyphenates it);
-    // the F2 reasons declare their user-facing hyphenated text directly so the
-    // chord wrapper stays a pure passthrough.
-    invalid_pitch,
+    // Error reasons. Each declares its user-facing hyphenated text directly so
+    // the LFE wrappers stay pure passthroughs (F1 and F2 are consistent).
+    invalid_pitch = "invalid-pitch",
     unknown_pitch = "unknown-pitch",
     unknown_quality = "unknown-quality",
     unknown_number = "unknown-number",
