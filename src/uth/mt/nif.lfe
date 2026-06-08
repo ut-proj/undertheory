@@ -1,6 +1,6 @@
 (defmodule uth.mt.nif
   (on_load (init 0))
-  (export (pong 0)
+  (export (ping 0)
           (parse-midi-pitch 1)
           (chord-notes 3)
           (make-base-space 0)
@@ -12,7 +12,7 @@
                 "crates/uth_mt_nif/uth_mt_nif")))
     (erlang:load_nif path 0)))
 
-(defun pong ()
+(defun ping ()
   (erlang:nif_error 'not-loaded))
 
 (defun parse-midi-pitch (_)

@@ -11,7 +11,7 @@ use rustler::{Atom, Error, ResourceArc};
 use terms::{NoteMap, PcChordTerm};
 
 #[rustler::nif]
-fn pong() -> Atom {
+fn ping() -> Atom {
     atoms::pong()
 }
 
