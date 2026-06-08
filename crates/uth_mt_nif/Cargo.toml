@@ -3,6 +3,13 @@ name = "uth_mt_nif"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.91"
+description = "Rustler NIFs bridging music-comp-mt to Erlang/LFE"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ut-proj/undertheory"
+readme = "README.md"
+keywords = ["erlang", "lfe", "nif", "music-theory", "rustler"]
+categories = ["api-bindings", "multimedia::audio"]
+documentation = "https://docs.rs/uth_mt_nif"
 
 [lib]
 name = "uth_mt_nif"
@@ -10,4 +17,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = { version = "0.38", features = ["nif_version_2_17"] }
-music-comp-mt = { version = "=0.6.1", features = ["midi"] }
+music-comp-mt = { version = "0.6", features = ["midi"] }
