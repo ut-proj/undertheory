@@ -44,3 +44,8 @@
   (let* ((space (uth.mt.oth:base-space))
          (bc (uth.mt.oth:betweenness-centrality space)))
     (is-equal 228 (length bc))))
+
+(deftest base-space-cached
+  (let ((h1 (uth.mt.oth:base-space))
+        (h2 (uth.mt.oth:base-space)))
+    (is-equal h1 h2)))
